@@ -5,7 +5,7 @@ on:
   pull_request:
 
 jobs:
-  test:
+  app:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,3 +27,62 @@ jobs:
         with:
           name: playwright-report
           path: test-results/
+
+  home-assistant:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Testumgebung
+        run: pip install pytest-homeassistant-custom-component
+      - name: Integrationstests (simulierte Leiste)
+        run: pytest -v
+
+  hassfest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: home-assistant/actions/hassfest@master
+
+  hacs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hacs/action@main
+        with:
+          category: integration
+          ignore: brands
+
+  linux-desktop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: .deb und AppImage bauen
+        run: npm run dist:linux
+      - name: .deb installieren
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ./release/pixelleiste_*_amd64.deb xvfb
+          dpkg -L pixelleiste | grep -E 'bin/pixelleiste|\.desktop$'
+      - name: Start-Test der installierten App
+        env:
+          PIXEL_EXE: /opt/PixelLeiste/pixelleiste
+          PIXEL_UPDATE_MODE: deb
+        run: |
+          npx playwright install --with-deps chromium
+          xvfb-run -a npx playwright test -c playwright.electron.config.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: linux-desktop
+          path: |
+            test-results/
+            release/*.deb
+            release/*.AppImage
+          retention-days: 7

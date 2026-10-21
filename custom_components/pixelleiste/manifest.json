@@ -1,0 +1,17 @@
+{
+  "domain": "pixelleiste",
+  "name": "PixelLeiste",
+  "bluetooth": [
+    { "connectable": true, "local_name": "LED_BLE*" },
+    { "connectable": true, "service_uuid": "000000fa-0000-1000-8000-00805f9b34fb" }
+  ],
+  "codeowners": ["@phillhf"],
+  "config_flow": true,
+  "dependencies": ["bluetooth_adapters"],
+  "documentation": "https://github.com/phillhf/PixelLeiste#home-assistant",
+  "integration_type": "device",
+  "iot_class": "assumed_state",
+  "issue_tracker": "https://github.com/phillhf/PixelLeiste/issues",
+  "requirements": [],
+  "version": "1.2.0"
+}

@@ -1,0 +1,176 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "user": {
+        "description": "LED-Leiste auswählen. Vorher die App „iPixel Color“ bzw. PixelLeiste schließen – die Leiste nimmt nur eine Verbindung gleichzeitig an.",
+        "data": { "address": "Leiste" }
+      },
+      "bluetooth_confirm": {
+        "description": "LED-Leiste {name} einrichten?"
+      }
+    },
+    "abort": {
+      "already_configured": "Diese Leiste ist bereits eingerichtet.",
+      "no_devices_found": "Keine LED-Leiste (LED_BLE_…) gefunden. Leiste einschalten, Handy-App schließen und sicherstellen, dass Home Assistant in der Nähe der Leiste Bluetooth hat (Adapter oder ESPHome-Bluetooth-Proxy).",
+      "not_supported": "Dieses Gerät ist keine unterstützte LED-Leiste."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "password": "Passwort der Leiste (6 Ziffern, leer wenn keins)",
+          "idle_seconds": "Verbindung trennen nach (Sekunden ohne Befehl)"
+        },
+        "data_description": {
+          "idle_seconds": "Die Leiste nimmt nur eine Verbindung an. Nach dieser Zeit gibt Home Assistant sie frei, damit sich Handy- oder PC-App verbinden können."
+        }
+      }
+    },
+    "error": { "invalid_password": "Das Passwort muss genau 6 Ziffern haben." }
+  },
+  "entity": {
+    "light": { "panel": { "name": "Leiste" } },
+    "text": { "text": { "name": "Text" } },
+    "number": { "speed": { "name": "Textgeschwindigkeit" } },
+    "button": {
+      "show_clock": { "name": "Uhr anzeigen" },
+      "sync_time": { "name": "Uhrzeit übertragen" }
+    },
+    "select": {
+      "effect": {
+        "name": "Texteffekt",
+        "state": {
+          "static": "Statisch", "scroll_left": "Lauftext nach links", "scroll_right": "Lauftext nach rechts",
+          "blink": "Blinken", "fade": "Atmen / Fade", "snowflake": "Schneeflocken"
+        }
+      },
+      "color": {
+        "name": "Textfarbe",
+        "state": {
+          "white": "Weiß", "red": "Rot", "orange": "Orange", "yellow": "Gelb", "green": "Grün",
+          "cyan": "Cyan", "blue": "Blau", "magenta": "Magenta", "rainbow": "Regenbogen"
+        }
+      },
+      "clock_style": { "name": "Ziffernblatt" },
+      "show_slot": { "name": "Speicherplatz anzeigen" }
+    }
+  },
+  "selector": {
+    "effect": {
+      "options": {
+        "static": "Statisch", "scroll_left": "Lauftext nach links", "scroll_right": "Lauftext nach rechts",
+        "blink": "Blinken", "fade": "Atmen / Fade", "snowflake": "Schneeflocken"
+      }
+    },
+    "fit": { "options": { "crop": "Füllen (zuschneiden)", "fit": "Einpassen (Ränder)", "stretch": "Strecken" } },
+    "timer_action": { "options": { "start": "Start", "pause": "Pause", "stop": "Stopp" } }
+  },
+  "services": {
+    "send_text": {
+      "name": "Text senden",
+      "description": "Zeigt einen Text auf der Leiste (Pixelschrift, Farbcodes wie [#ff0000]rot[/] möglich).",
+      "fields": {
+        "device_id": { "name": "Leiste", "description": "Eine oder mehrere PixelLeiste-Geräte." },
+        "text": { "name": "Text", "description": "Bis zu 255 Zeichen." },
+        "effect": { "name": "Effekt", "description": "Animation des Textes." },
+        "color": { "name": "Farbe", "description": "Textfarbe." },
+        "background": { "name": "Hintergrund", "description": "Optionale Hintergrundfarbe." },
+        "speed": { "name": "Geschwindigkeit", "description": "0–100." },
+        "rainbow": { "name": "Regenbogen", "description": "0 = aus, 1–9 = Regenbogen-Stile." },
+        "slot": { "name": "Speicherplatz", "description": "0 = nur anzeigen, 1–10 = zusätzlich in diesem Platz speichern." }
+      }
+    },
+    "send_image": {
+      "name": "Bild senden",
+      "description": "Zeigt ein Bild oder animiertes GIF, skaliert auf die Größe der Leiste.",
+      "fields": {
+        "device_id": { "name": "Leiste", "description": "Eine oder mehrere PixelLeiste-Geräte." },
+        "path": { "name": "Datei", "description": "Pfad auf dem Home-Assistant-Rechner (muss in allowlist_external_dirs stehen, z. B. /config/www)." },
+        "url": { "name": "URL", "description": "Alternativ eine Bildadresse." },
+        "fit": { "name": "Anpassen", "description": "Wie das Bild skaliert wird." },
+        "slot": { "name": "Speicherplatz", "description": "0 = nur anzeigen, 1–10 = zusätzlich in diesem Platz speichern." }
+      }
+    },
+    "show_clock": {
+      "name": "Uhr anzeigen",
+      "description": "Gleicht die Uhrzeit ab und zeigt ein Ziffernblatt.",
+      "fields": {
+        "device_id": { "name": "Leiste", "description": "Eine oder mehrere PixelLeiste-Geräte." },
+        "style": { "name": "Ziffernblatt", "description": "1–9." },
+        "format_24": { "name": "24 Stunden", "description": "24-Stunden-Format." },
+        "show_date": { "name": "Datum anzeigen", "description": "Zusätzlich das Datum anzeigen." }
+      }
+    },
+    "show_slot": {
+      "name": "Speicherplatz anzeigen",
+      "description": "Zeigt den Inhalt eines Speicherplatzes.",
+      "fields": {
+        "device_id": { "name": "Leiste", "description": "Eine oder mehrere PixelLeiste-Geräte." },
+        "slot": { "name": "Speicherplatz", "description": "1–10." }
+      }
+    },
+    "delete_slot": {
+      "name": "Speicherplatz löschen",
+      "description": "Löscht den Inhalt eines Speicherplatzes.",
+      "fields": {
+        "device_id": { "name": "Leiste", "description": "Eine oder mehrere PixelLeiste-Geräte." },
+        "slot": { "name": "Speicherplatz", "description": "1–10." }
+      }
+    },
+    "scoreboard": {
+      "name": "Anzeigetafel",
+      "description": "Zeigt zwei Spielstände.",
+      "fields": {
+        "device_id": { "name": "Leiste", "description": "Eine oder mehrere PixelLeiste-Geräte." },
+        "left": { "name": "Links", "description": "0–99." },
+        "right": { "name": "Rechts", "description": "0–99." }
+      }
+    },
+    "countdown": {
+      "name": "Countdown",
+      "description": "Startet, pausiert oder stoppt den Countdown.",
+      "fields": {
+        "device_id": { "name": "Leiste", "description": "Eine oder mehrere PixelLeiste-Geräte." },
+        "action": { "name": "Aktion", "description": "Start, Pause oder Stopp." },
+        "minutes": { "name": "Minuten", "description": "0–255." },
+        "seconds": { "name": "Sekunden", "description": "0–59." }
+      }
+    },
+    "stopwatch": {
+      "name": "Stoppuhr",
+      "description": "Startet, pausiert oder stoppt die Stoppuhr.",
+      "fields": {
+        "device_id": { "name": "Leiste", "description": "Eine oder mehrere PixelLeiste-Geräte." },
+        "action": { "name": "Aktion", "description": "Start, Pause oder Stopp." }
+      }
+    },
+    "rhythm": {
+      "name": "Rhythmus-Effekt",
+      "description": "Zeigt die eingebaute Rhythmus-Animation der Leiste.",
+      "fields": {
+        "device_id": { "name": "Leiste", "description": "Eine oder mehrere PixelLeiste-Geräte." },
+        "style": { "name": "Stil", "description": "1 oder 2." },
+        "intensity": { "name": "Stärke", "description": "0–7." }
+      }
+    },
+    "set_orientation": {
+      "name": "Ausrichtung setzen",
+      "description": "Dreht oder spiegelt die Anzeige.",
+      "fields": {
+        "device_id": { "name": "Leiste", "description": "Eine oder mehrere PixelLeiste-Geräte." },
+        "orientation": { "name": "Ausrichtung", "description": "0 = normal, 1–3 = Varianten." }
+      }
+    }
+  },
+  "exceptions": {
+    "not_found": { "message": "Die Leiste {name} ist nicht in Bluetooth-Reichweite (oder die Handy-App ist mit ihr verbunden)." },
+    "connect_failed": { "message": "Verbindung zu {name} fehlgeschlagen: {error}" },
+    "no_answer": { "message": "Die Leiste {name} hat nicht geantwortet." },
+    "password_required": { "message": "Die Leiste {name} ist mit einem Passwort geschützt – Passwort in den Optionen der Integration eintragen." },
+    "unknown_device": { "message": "Unbekanntes oder nicht geladenes PixelLeiste-Gerät." },
+    "path_not_allowed": { "message": "Home Assistant darf {path} nicht lesen – Ordner in allowlist_external_dirs eintragen." },
+    "no_image": { "message": "Bitte eine Datei oder eine URL angeben." }
+  }
+}

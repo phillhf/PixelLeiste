@@ -9,7 +9,8 @@ contextBridge.exposeInMainWorld('pixelDesktop', {
   lastSelected: () => ipcRenderer.invoke('bt-last-selected'),
   autoConnect: (deviceId) => ipcRenderer.invoke('bt-auto-connect', deviceId),
   sysStats: () => ipcRenderer.invoke('sys-stats'),
-  isInstalled: () => ipcRenderer.invoke('is-installed'),
-  installUpdate: (url, sha256) => ipcRenderer.invoke('install-update', url, sha256),
+  platform: process.platform,
+  updateMode: () => ipcRenderer.invoke('update-mode'),
+  installUpdate: (version, assets) => ipcRenderer.invoke('install-update', version, assets),
   openExternal: (url) => ipcRenderer.invoke('open-external', url),
 });

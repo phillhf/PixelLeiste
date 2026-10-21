@@ -49,11 +49,9 @@ async function installUpdate() {
   const asset = (name: string) => latest!.assets.find((a) => a.name === name)?.browser_download_url;
   try {
     if (desktop) {
-      const setup = asset(`PixelLeiste-Setup-${v}.exe`);
-      const sha = asset(`PixelLeiste-Setup-${v}.exe.sha256`);
-      if (setup && sha && await desktop.isInstalled()) {
+      if (await desktop.updateMode() !== 'none') {
         toast(t('Update wird geladen …'));
-        await desktop.installUpdate(setup, sha);
+        await desktop.installUpdate(v, latest.assets.map((a) => ({ name: a.name, url: a.browser_download_url })));
       } else {
         await desktop.openExternal(latest.html_url);
       }

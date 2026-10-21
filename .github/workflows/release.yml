@@ -1,7 +1,8 @@
-name: Build Windows installer and Android APK
+name: Build Windows installer, Linux packages and Android APK
 
-# Baut bei jeder veroeffentlichten Release PixelLeiste-Setup-<Version>.exe und PixelLeiste-<Version>.apk
-# (jeweils mit .sha256) und haengt sie an die Release an.
+# Baut bei jeder veroeffentlichten Release PixelLeiste-Setup-<Version>.exe, pixelleiste_<Version>_amd64.deb,
+# PixelLeiste-<Version>-x86_64.AppImage und PixelLeiste-<Version>.apk (jeweils mit .sha256)
+# und haengt sie an die Release an.
 # Die APK wird mit dem Release-Schluessel aus den Secrets PIXELLEISTE_KEYSTORE_BASE64 und
 # PIXELLEISTE_KEYSTORE_PASSWORD signiert, damit Updates sich ueber die vorhandene App installieren lassen.
 on:
@@ -54,6 +55,30 @@ jobs:
         run: |
           $setup = Get-ChildItem release\PixelLeiste-Setup-*.exe | Select-Object -First 1
           gh release upload $env:TAG $setup.FullName "$($setup.FullName).sha256" --clobber
+
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: .deb und AppImage bauen
+        run: |
+          npm ci
+          npm run dist:linux
+
+      - name: An die Release anhaengen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd release
+          for f in pixelleiste_*_amd64.deb PixelLeiste-*-x86_64.AppImage; do sha256sum "$f" > "$f.sha256"; done
+          gh release upload "$TAG" pixelleiste_*_amd64.deb* PixelLeiste-*-x86_64.AppImage* --clobber
 
   android:
     runs-on: ubuntu-latest

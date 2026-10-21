@@ -1,0 +1,142 @@
+send_text:
+  fields:
+    device_id: &device
+      required: true
+      selector:
+        device:
+          integration: pixelleiste
+          multiple: true
+    text:
+      required: true
+      example: "Hallo Welt!"
+      selector:
+        text:
+    effect:
+      default: scroll_left
+      selector:
+        select:
+          translation_key: effect
+          options: [static, scroll_left, scroll_right, blink, fade, snowflake]
+    color:
+      default: [255, 255, 255]
+      selector:
+        color_rgb:
+    background:
+      selector:
+        color_rgb:
+    speed:
+      default: 60
+      selector:
+        number: { min: 0, max: 100, mode: slider }
+    rainbow:
+      default: 0
+      selector:
+        number: { min: 0, max: 9, mode: box }
+    slot: &slot
+      default: 0
+      selector:
+        number: { min: 0, max: 10, mode: box }
+
+send_image:
+  fields:
+    device_id: *device
+    path:
+      example: /config/www/pixel/herz.gif
+      selector:
+        text:
+    url:
+      example: https://example.com/animation.gif
+      selector:
+        text:
+          type: url
+    fit:
+      default: crop
+      selector:
+        select:
+          translation_key: fit
+          options: [crop, fit, stretch]
+    slot: *slot
+
+show_clock:
+  fields:
+    device_id: *device
+    style:
+      default: 1
+      selector:
+        number: { min: 1, max: 9, mode: box }
+    format_24:
+      default: true
+      selector:
+        boolean:
+    show_date:
+      default: true
+      selector:
+        boolean:
+
+show_slot:
+  fields:
+    device_id: *device
+    slot: &slot_required
+      required: true
+      selector:
+        number: { min: 1, max: 10, mode: box }
+
+delete_slot:
+  fields:
+    device_id: *device
+    slot: *slot_required
+
+scoreboard:
+  fields:
+    device_id: *device
+    left:
+      required: true
+      selector:
+        number: { min: 0, max: 99, mode: box }
+    right:
+      required: true
+      selector:
+        number: { min: 0, max: 99, mode: box }
+
+countdown:
+  fields:
+    device_id: *device
+    action: &timer_action
+      default: start
+      selector:
+        select:
+          translation_key: timer_action
+          options: [start, pause, stop]
+    minutes:
+      default: 5
+      selector:
+        number: { min: 0, max: 255, mode: box }
+    seconds:
+      default: 0
+      selector:
+        number: { min: 0, max: 59, mode: box }
+
+stopwatch:
+  fields:
+    device_id: *device
+    action: *timer_action
+
+rhythm:
+  fields:
+    device_id: *device
+    style:
+      default: 1
+      selector:
+        number: { min: 1, max: 2, mode: box }
+    intensity:
+      default: 3
+      selector:
+        number: { min: 0, max: 7, mode: slider }
+
+set_orientation:
+  fields:
+    device_id: *device
+    orientation:
+      required: true
+      selector:
+        number: { min: 0, max: 3, mode: box }

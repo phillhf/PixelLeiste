@@ -2,7 +2,7 @@
   "name": "pixelleiste",
   "productName": "PixelLeiste",
   "version": "1.1.0",
-  "description": "Steuerung für iPixel-kompatible LED-Leisten (96x16) per Bluetooth LE – Windows & Android",
+  "description": "Steuerung für iPixel-kompatible LED-Leisten (96x16) per Bluetooth LE – Windows, Linux & Android",
   "author": "Phill (phillhf)",
   "homepage": "https://github.com/phillhf/PixelLeiste",
   "license": "MIT",
@@ -15,6 +15,7 @@
     "test": "vitest run",
     "electron": "npm run build && electron .",
     "dist:win": "powershell -ExecutionPolicy Bypass -File installer/build.ps1",
+    "dist:linux": "npm run build && electron-builder --linux deb AppImage --publish never",
     "android:sync": "npm run build && cap sync android",
     "android:apk": "npm run android:sync && cd android && gradlew.bat assembleDebug"
   },
@@ -38,6 +39,40 @@
         "dir"
       ],
       "icon": "installer/app.ico"
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "AppImage"
+      ],
+      "icon": "build/icon.png",
+      "category": "Utility",
+      "executableName": "pixelleiste",
+      "maintainer": "Phill (phillhf) <181326255+phillhf@users.noreply.github.com>",
+      "synopsis": "LED-Leisten der iPixel-Color-Familie per Bluetooth steuern",
+      "desktop": {
+        "Name": "PixelLeiste",
+        "Comment": "LED-Leisten per Bluetooth steuern",
+        "Keywords": "LED;Bluetooth;iPixel;Laufschrift;"
+      }
+    },
+    "deb": {
+      "depends": [
+        "bluez",
+        "libgtk-3-0",
+        "libnotify4",
+        "libnss3",
+        "libxss1",
+        "libxtst6",
+        "xdg-utils",
+        "libatspi2.0-0",
+        "libuuid1",
+        "libsecret-1-0"
+      ],
+      "artifactName": "pixelleiste_${version}_amd64.deb"
+    },
+    "appImage": {
+      "artifactName": "PixelLeiste-${version}-x86_64.AppImage"
     }
   },
   "devDependencies": {

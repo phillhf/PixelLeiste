@@ -20,8 +20,10 @@ interface Window {
     /** Silently picks `deviceId` once it shows up; calls window.__pixelAutoPick with a user gesture. */
     autoConnect(deviceId: string): Promise<void>;
     sysStats(): Promise<{ cpu: number; ram: number }>;
-    isInstalled(): Promise<boolean>;
-    installUpdate(url: string, sha256: string): Promise<void>;
+    platform: string;
+    /** How this installation can update itself. */
+    updateMode(): Promise<'setup' | 'appimage' | 'deb' | 'none'>;
+    installUpdate(version: string, assets: { name: string; url: string }[]): Promise<void>;
     openExternal(url: string): Promise<void>;
   };
   __pixelAutoPick?: () => Promise<unknown>;

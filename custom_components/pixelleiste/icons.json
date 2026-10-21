@@ -1,0 +1,28 @@
+{
+  "entity": {
+    "text": { "text": { "default": "mdi:message-text" } },
+    "number": { "speed": { "default": "mdi:speedometer" } },
+    "button": {
+      "show_clock": { "default": "mdi:clock-digital" },
+      "sync_time": { "default": "mdi:clock-check" }
+    },
+    "select": {
+      "effect": { "default": "mdi:animation-play" },
+      "color": { "default": "mdi:palette" },
+      "clock_style": { "default": "mdi:clock-outline" },
+      "show_slot": { "default": "mdi:numeric" }
+    }
+  },
+  "services": {
+    "send_text": { "service": "mdi:message-text" },
+    "send_image": { "service": "mdi:image" },
+    "show_clock": { "service": "mdi:clock-digital" },
+    "show_slot": { "service": "mdi:numeric" },
+    "delete_slot": { "service": "mdi:delete" },
+    "scoreboard": { "service": "mdi:scoreboard" },
+    "countdown": { "service": "mdi:timer-sand" },
+    "stopwatch": { "service": "mdi:timer" },
+    "rhythm": { "service": "mdi:music" },
+    "set_orientation": { "service": "mdi:screen-rotation" }
+  }
+}

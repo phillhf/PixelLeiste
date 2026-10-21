@@ -9,6 +9,12 @@ const { spawn } = require('node:child_process');
 
 const AUTO_PICK_TIMEOUT_MS = 12000;
 
+// Chromium ships Web Bluetooth on Linux (BlueZ via D-Bus) only behind a flag.
+if (process.platform === 'linux') {
+  app.commandLine.appendSwitch('enable-experimental-web-platform-features');
+  app.commandLine.appendSwitch('enable-features', 'WebBluetooth');
+}
+
 let win = null;
 let pendingSelect = null;
 let lastSelected = null;
@@ -99,23 +105,71 @@ ipcMain.handle('sys-stats', () => {
   };
 });
 
-// --- self update (only for installations made with the Inno Setup installer) -------------
+// --- self update ------------------------------------------------------------------------
+// Windows: installations made with the Inno Setup installer run the new setup silently.
+// Linux: an AppImage replaces itself; a .deb installation gets the verified package opened
+// in the system's software installer.
 
 const installDir = () => path.dirname(app.getPath('exe'));
-ipcMain.handle('is-installed', () => app.isPackaged && fs.existsSync(path.join(installDir(), 'unins000.exe')));
+
+/** 'setup' | 'appimage' | 'deb' | 'none' */
+function updateMode() {
+  if (!app.isPackaged) return 'none';
+  if (process.platform === 'win32') return fs.existsSync(path.join(installDir(), 'unins000.exe')) ? 'setup' : 'none';
+  if (process.platform === 'linux') {
+    if (process.env.APPIMAGE) return 'appimage';
+    if (installDir().startsWith('/opt/')) return 'deb';
+  }
+  return 'none';
+}
+
+const ASSET = {
+  setup: (v) => `PixelLeiste-Setup-${v}.exe`,
+  appimage: (v) => `PixelLeiste-${v}-x86_64.AppImage`,
+  deb: (v) => `pixelleiste_${v}_amd64.deb`,
+};
+
+ipcMain.handle('update-mode', () => updateMode());
 ipcMain.handle('open-external', (_e, url) => (/^https:\/\//.test(url) ? shell.openExternal(url) : undefined));
 
-ipcMain.handle('install-update', async (_e, setupUrl, shaUrl) => {
+async function download(url) {
   const allowed = /^https:\/\/github\.com\/phillhf\/PixelLeiste\/releases\/download\//;
-  if (!allowed.test(setupUrl) || !allowed.test(shaUrl)) throw new Error('Unerwartete Download-Adresse');
-  const expected = (await (await net.fetch(shaUrl)).text()).trim().split(/\s+/)[0].toLowerCase();
-  const data = Buffer.from(await (await net.fetch(setupUrl)).arrayBuffer());
-  const actual = crypto.createHash('sha256').update(data).digest('hex');
-  if (actual !== expected) throw new Error('Prüfsumme des Updates stimmt nicht');
-  const file = path.join(app.getPath('temp'), path.basename(new URL(setupUrl).pathname));
-  fs.writeFileSync(file, data);
-  spawn(file, ['/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/RESTARTAPP=1'], { detached: true, stdio: 'ignore' }).unref();
-  setTimeout(() => app.quit(), 300);
+  if (!allowed.test(url)) throw new Error('Unerwartete Download-Adresse');
+  const res = await net.fetch(url);
+  if (!res.ok) throw new Error(`Download fehlgeschlagen (HTTP ${res.status})`);
+  return Buffer.from(await res.arrayBuffer());
+}
+
+ipcMain.handle('install-update', async (_e, version, assets) => {
+  const mode = updateMode();
+  if (mode === 'none') throw new Error('Diese Installation kann sich nicht selbst aktualisieren');
+  const name = ASSET[mode](version);
+  const url = assets.find((a) => a.name === name)?.url;
+  const shaUrl = assets.find((a) => a.name === `${name}.sha256`)?.url;
+  if (!url || !shaUrl) throw new Error(`${name} fehlt in der Release`);
+
+  const expected = (await download(shaUrl)).toString('utf8').trim().split(/\s+/)[0].toLowerCase();
+  const data = await download(url);
+  if (crypto.createHash('sha256').update(data).digest('hex') !== expected) throw new Error('Prüfsumme des Updates stimmt nicht');
+
+  if (mode === 'setup') {
+    const file = path.join(app.getPath('temp'), name);
+    fs.writeFileSync(file, data);
+    spawn(file, ['/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/RESTARTAPP=1'], { detached: true, stdio: 'ignore' }).unref();
+    setTimeout(() => app.quit(), 300);
+  } else if (mode === 'appimage') {
+    const target = process.env.APPIMAGE;
+    const tmp = `${target}.new`;
+    fs.writeFileSync(tmp, data, { mode: 0o755 });
+    fs.renameSync(tmp, target);
+    app.relaunch({ execPath: target });
+    app.quit();
+  } else {
+    const file = path.join(app.getPath('downloads'), name);
+    fs.writeFileSync(file, data);
+    const err = await shell.openPath(file);
+    if (err) throw new Error(`Paket gespeichert unter ${file} – bitte mit „sudo apt install ${file}“ installieren`);
+  }
 });
 
 app.whenReady().then(createWindow);
