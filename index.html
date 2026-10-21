@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>PixelLeiste</title>
-  <link rel="stylesheet" href="./src/style.css" />
+  <link rel="icon" href="./icon.png" />
 </head>
 <body>
   <header class="top">
@@ -12,60 +12,89 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="7" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="17" cy="12" r="1.4" fill="currentColor"/></svg>
       <span>PixelLeiste</span>
     </div>
-    <div class="conn">
-      <span id="status" class="status off">Nicht verbunden</span>
-      <button id="btnConnect" class="primary">Verbinden</button>
-    </div>
+    <button id="btnAdd" class="primary" data-i18n>Verbinden</button>
   </header>
 
+  <div id="updateBar" class="update-bar" hidden>
+    <span id="updateText"></span>
+    <button id="btnUpdate" class="primary" data-i18n>Jetzt aktualisieren</button>
+    <button id="btnUpdateLater" class="ghost" aria-label="Später" data-i18n-attr="aria-label">✕</button>
+  </div>
+
+  <section class="devices" id="devices" aria-live="polite"></section>
+
   <section class="preview-wrap">
-    <canvas id="preview" width="96" height="16" aria-label="Vorschau der LED-Leiste"></canvas>
+    <canvas id="preview" width="96" height="16" aria-label="Vorschau der LED-Leiste" data-i18n-attr="aria-label"></canvas>
     <div id="progress" class="progress" hidden><div></div></div>
   </section>
 
   <nav class="tabs" role="tablist">
-    <button role="tab" data-tab="text" aria-selected="true">Text</button>
-    <button role="tab" data-tab="image">Bild / GIF</button>
-    <button role="tab" data-tab="draw">Zeichnen</button>
-    <button role="tab" data-tab="live">Uhr &amp; Live</button>
-    <button role="tab" data-tab="device">Gerät</button>
+    <button role="tab" data-tab="text" aria-selected="true" data-i18n>Text</button>
+    <button role="tab" data-tab="image" data-i18n>Bild / GIF</button>
+    <button role="tab" data-tab="draw" data-i18n>Zeichnen</button>
+    <button role="tab" data-tab="fav" data-i18n>Favoriten</button>
+    <button role="tab" data-tab="music" data-i18n>Musik</button>
+    <button role="tab" data-tab="live" data-i18n>Uhr &amp; Live</button>
+    <button role="tab" data-tab="device" data-i18n>Gerät</button>
   </nav>
 
   <main>
     <!-- TEXT -->
     <section class="panel" data-panel="text">
       <label class="field">
-        <span>Text <small>Farbcodes möglich: <code>[#ff0000]rot[/] normal</code></small></span>
-        <textarea id="txt" rows="2" maxlength="255">Hallo Welt!</textarea>
+        <span><span data-i18n>Text</span> <small><span data-i18n>Farbcodes möglich:</span> <code>[#ff0000]rot[/] normal</code></small></span>
+        <textarea id="txt" rows="2" maxlength="255" data-persist>Hallo Welt!</textarea>
       </label>
       <div class="grid">
-        <label class="field"><span>Effekt</span>
-          <select id="txtAnim">
-            <option value="0">Statisch</option>
-            <option value="1" selected>Lauftext nach links</option>
-            <option value="2">Lauftext nach rechts</option>
-            <option value="5">Blinken</option>
-            <option value="6">Atmen / Fade</option>
-            <option value="7">Schneeflocken</option>
+        <label class="field"><span data-i18n>Schrift</span>
+          <select id="txtFont" data-persist>
+            <option value="pixel" data-i18n>Leisten-Schrift (Pixel)</option>
+            <option value="Arial">Arial</option>
+            <option value="Verdana">Verdana</option>
+            <option value="Tahoma">Tahoma</option>
+            <option value="Segoe UI, Roboto, sans-serif">Segoe UI / Roboto</option>
+            <option value="Impact, Haettenschweiler, sans-serif">Impact</option>
+            <option value="Georgia, serif">Georgia</option>
+            <option value="Courier New, monospace">Courier</option>
+            <option value="Comic Sans MS, cursive">Comic Sans</option>
           </select>
         </label>
-        <label class="field"><span>Regenbogen</span>
-          <select id="txtRainbow">
-            <option value="0">Aus</option>
-            <option value="1">Stil 1</option><option value="2">Stil 2</option><option value="3">Stil 3</option>
-            <option value="4">Stil 4</option><option value="5">Stil 5</option><option value="6">Stil 6</option>
-            <option value="7">Stil 7</option><option value="8">Stil 8</option><option value="9">Stil 9</option>
+        <label class="field"><span data-i18n>Effekt</span>
+          <select id="txtAnim" data-persist>
+            <option value="0" data-i18n>Statisch</option>
+            <option value="1" selected data-i18n>Lauftext nach links</option>
+            <option value="2" data-i18n>Lauftext nach rechts</option>
+            <option value="5" data-i18n>Blinken</option>
+            <option value="6" data-native data-i18n>Atmen / Fade</option>
+            <option value="7" data-native data-i18n>Schneeflocken</option>
           </select>
         </label>
-        <label class="field"><span>Textfarbe</span><input id="txtColor" type="color" value="#ff3b30" /></label>
-        <label class="field"><span><input id="txtBgOn" type="checkbox" /> Hintergrund</span><input id="txtBg" type="color" value="#000040" /></label>
+        <label class="field"><span data-i18n>Regenbogen</span>
+          <select id="txtRainbow" data-persist>
+            <option value="0" data-i18n>Aus</option>
+            <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+            <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+            <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+          </select>
+        </label>
+        <label class="field"><span data-i18n>Textfarbe</span><input id="txtColor" type="color" value="#ff3b30" data-persist /></label>
+        <label class="field"><span><input id="txtBgOn" type="checkbox" data-persist /> <span data-i18n>Hintergrund</span></span><input id="txtBg" type="color" value="#000040" data-persist /></label>
       </div>
-      <label class="field"><span>Geschwindigkeit <output id="txtSpeedOut">60</output></span>
-        <input id="txtSpeed" type="range" min="0" max="100" value="60" />
+      <div id="sysFontOpts" class="grid" hidden>
+        <label class="field"><span><span data-i18n>Schriftgröße</span> <output id="txtSizeOut">14</output> px</span>
+          <input id="txtSize" type="range" min="7" max="16" value="14" data-persist />
+        </label>
+        <label class="check"><input id="txtBold" type="checkbox" checked data-persist /> <span data-i18n>Fett</span></label>
+        <label class="check"><input id="txtSmooth" type="checkbox" data-persist /> <span data-i18n>Kantenglättung</span></label>
+      </div>
+      <p id="sysFontHint" class="hint" hidden data-i18n>Mit einer System-Schrift wird der Text als Bild bzw. Animation gesendet – auch Emojis 😀 sind möglich.</p>
+      <label class="field"><span><span data-i18n>Geschwindigkeit</span> <output id="txtSpeedOut">60</output></span>
+        <input id="txtSpeed" type="range" min="0" max="100" value="60" data-persist />
       </label>
       <div class="row">
-        <label class="field slot"><span>Speichern in</span><select class="slotSel" id="txtSlot"></select></label>
-        <button id="btnText" class="primary big">Text senden</button>
+        <label class="field slot"><span data-i18n>Speichern in</span><select class="slotSel" id="txtSlot"></select></label>
+        <button id="btnTextFav" class="icon-btn" title="Als Favorit speichern" data-i18n-attr="title">★</button>
+        <button id="btnText" class="primary big" data-i18n>Text senden</button>
       </div>
     </section>
 
@@ -73,140 +102,231 @@
     <section class="panel" data-panel="image" hidden>
       <label class="drop" id="drop">
         <input id="imgFile" type="file" accept="image/png,image/jpeg,image/gif,image/webp,image/bmp" />
-        <span id="imgName">Bild oder animiertes GIF auswählen …</span>
+        <span id="imgName" data-i18n>Bild oder animiertes GIF auswählen …</span>
       </label>
       <div class="grid">
-        <label class="field"><span>Anpassen</span>
-          <select id="imgFit">
-            <option value="crop">Füllen (zuschneiden)</option>
-            <option value="fit">Einpassen (Ränder)</option>
-            <option value="stretch">Strecken</option>
+        <label class="field"><span data-i18n>Anpassen</span>
+          <select id="imgFit" data-persist>
+            <option value="crop" data-i18n>Füllen (zuschneiden)</option>
+            <option value="fit" data-i18n>Einpassen (Ränder)</option>
+            <option value="stretch" data-i18n>Strecken</option>
           </select>
         </label>
-        <label class="field"><span>Skalierung</span>
-          <select id="imgSmooth">
-            <option value="1">Weich (Fotos)</option>
-            <option value="0">Pixelgenau (Pixel-Art)</option>
+        <label class="field"><span data-i18n>Skalierung</span>
+          <select id="imgSmooth" data-persist>
+            <option value="1" data-i18n>Weich (Fotos)</option>
+            <option value="0" data-i18n>Pixelgenau (Pixel-Art)</option>
           </select>
         </label>
       </div>
       <p id="imgInfo" class="hint"></p>
       <div class="row">
-        <label class="field slot"><span>Speichern in</span><select class="slotSel" id="imgSlot"></select></label>
-        <button id="btnImage" class="primary big" disabled>Bild senden</button>
+        <label class="field slot"><span data-i18n>Speichern in</span><select class="slotSel" id="imgSlot"></select></label>
+        <button id="btnImageFav" class="icon-btn" title="Als Favorit speichern" data-i18n-attr="title" disabled>★</button>
+        <button id="btnImage" class="primary big" disabled data-i18n>Bild senden</button>
       </div>
     </section>
 
     <!-- DRAW -->
     <section class="panel" data-panel="draw" hidden>
       <div class="draw-tools">
-        <input id="drawColor" type="color" value="#00e5ff" aria-label="Farbe" />
+        <input id="drawColor" type="color" value="#00e5ff" aria-label="Farbe" data-i18n-attr="aria-label" data-persist />
         <div id="swatches" class="swatches"></div>
-        <div class="seg" role="group" aria-label="Werkzeug">
-          <button data-tool="pen" class="on">Stift</button>
-          <button data-tool="erase">Radierer</button>
-          <button data-tool="fill">Füllen</button>
+        <div class="seg" role="group">
+          <button data-tool="pen" class="on" data-i18n>Stift</button>
+          <button data-tool="erase" data-i18n>Radierer</button>
+          <button data-tool="fill" data-i18n>Füllen</button>
         </div>
       </div>
       <div class="draw-wrap"><canvas id="drawCanvas" width="96" height="16"></canvas></div>
       <div class="row wrap">
-        <label class="check"><input id="drawLive" type="checkbox" /> Live auf der Leiste zeichnen</label>
-        <button id="btnDrawClear">Leeren</button>
-        <button id="btnDrawFromPreview">Vorschau übernehmen</button>
+        <label class="check"><input id="drawLive" type="checkbox" /> <span data-i18n>Live auf der Leiste zeichnen</span></label>
+        <button id="btnDrawClear" data-i18n>Leeren</button>
+        <button id="btnDrawFromPreview" data-i18n>Vorschau übernehmen</button>
       </div>
       <div class="row">
-        <label class="field slot"><span>Speichern in</span><select class="slotSel" id="drawSlot"></select></label>
-        <button id="btnDraw" class="primary big">Zeichnung senden</button>
+        <label class="field slot"><span data-i18n>Speichern in</span><select class="slotSel" id="drawSlot"></select></label>
+        <button id="btnDrawFav" class="icon-btn" title="Als Favorit speichern" data-i18n-attr="title">★</button>
+        <button id="btnDraw" class="primary big" data-i18n>Zeichnung senden</button>
       </div>
+    </section>
+
+    <!-- FAVORITES -->
+    <section class="panel" data-panel="fav" hidden>
+      <p class="hint" data-i18n>Mit ★ in Text, Bild oder Zeichnen speicherst du Inhalte hier. Mehrere Favoriten lassen sich zu einem Profil bündeln und auf einmal in die Speicherplätze laden.</p>
+      <div id="favList" class="fav-list"></div>
+      <p id="favEmpty" class="empty" data-i18n>Noch keine Favoriten.</p>
+
+      <h3 data-i18n>Profile</h3>
+      <div class="row wrap">
+        <label class="field grow"><span data-i18n>Neues Profil aus den markierten Favoriten</span><input id="profName" type="text" placeholder="z. B. Auto, Party" data-i18n-attr="placeholder" /></label>
+        <button id="btnProfCreate" data-i18n>Profil anlegen</button>
+      </div>
+      <label class="check"><input id="profClear" type="checkbox" checked data-persist /> <span data-i18n>Beim Übertragen übrige Speicherplätze leeren</span></label>
+      <div id="profList" class="prof-list"></div>
+    </section>
+
+    <!-- MUSIC -->
+    <section class="panel" data-panel="music" hidden>
+      <h3 data-i18n>Equalizer über das Mikrofon</h3>
+      <p class="hint" data-i18n>Das Mikrofon dieses Geräts hört mit und steuert die 11 Balken der Leiste im Takt der Musik.</p>
+      <div class="grid">
+        <label class="field"><span data-i18n>Stil</span>
+          <select id="musStyle" data-persist>
+            <option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option><option value="4">5</option>
+          </select>
+        </label>
+        <label class="field"><span><span data-i18n>Empfindlichkeit</span> <output id="musGainOut">50</output></span>
+          <input id="musGain" type="range" min="1" max="100" value="50" data-persist />
+        </label>
+      </div>
+      <div class="row"><button id="btnMusic" class="primary" data-i18n>Equalizer starten</button></div>
+
+      <h3 data-i18n>Eingebauter Rhythmus-Effekt</h3>
+      <div class="grid">
+        <label class="field"><span data-i18n>Stil</span>
+          <select id="rhStyle" data-persist><option value="0">1</option><option value="1">2</option></select>
+        </label>
+        <label class="field"><span><span data-i18n>Stärke</span> <output id="rhTimeOut">3</output></span>
+          <input id="rhTime" type="range" min="0" max="7" value="3" data-persist />
+        </label>
+      </div>
+      <div class="row"><button id="btnRhythm" data-i18n>Rhythmus-Effekt anzeigen</button></div>
     </section>
 
     <!-- LIVE -->
     <section class="panel" data-panel="live" hidden>
-      <h3>Uhr</h3>
+      <h3 data-i18n>Uhr</h3>
       <div class="grid">
-        <label class="field"><span>Ziffernblatt</span>
-          <select id="clkStyle"></select>
-        </label>
-        <label class="check"><input id="clk24" type="checkbox" checked /> 24-Stunden</label>
-        <label class="check"><input id="clkDate" type="checkbox" checked /> Datum anzeigen</label>
+        <label class="field"><span data-i18n>Ziffernblatt</span><select id="clkStyle" data-persist></select></label>
+        <label class="check"><input id="clk24" type="checkbox" checked data-persist /> <span data-i18n>24-Stunden</span></label>
+        <label class="check"><input id="clkDate" type="checkbox" checked data-persist /> <span data-i18n>Datum anzeigen</span></label>
       </div>
-      <div class="row"><button id="btnClock" class="primary">Uhr anzeigen (mit Zeitabgleich)</button></div>
+      <div class="row"><button id="btnClock" class="primary" data-i18n>Uhr anzeigen (mit Zeitabgleich)</button></div>
 
-      <h3>Stoppuhr</h3>
+      <h3 data-i18n>Stoppuhr</h3>
       <div class="row">
-        <button data-sw="1">Start</button><button data-sw="2">Pause</button><button data-sw="0">Stopp</button>
+        <button data-sw="1" data-i18n>Start</button><button data-sw="2" data-i18n>Pause</button><button data-sw="0" data-i18n>Stopp</button>
       </div>
 
-      <h3>Countdown</h3>
+      <h3 data-i18n>Countdown</h3>
       <div class="row wrap">
-        <label class="field tiny"><span>Min</span><input id="cdMin" type="number" min="0" max="255" value="5" /></label>
-        <label class="field tiny"><span>Sek</span><input id="cdSec" type="number" min="0" max="59" value="0" /></label>
-        <button data-cd="1">Start</button><button data-cd="2">Pause</button><button data-cd="0">Stopp</button>
+        <label class="field tiny"><span data-i18n>Min</span><input id="cdMin" type="number" min="0" max="255" value="5" data-persist /></label>
+        <label class="field tiny"><span data-i18n>Sek</span><input id="cdSec" type="number" min="0" max="59" value="0" data-persist /></label>
+        <button data-cd="1" data-i18n>Start</button><button data-cd="2" data-i18n>Pause</button><button data-cd="0" data-i18n>Stopp</button>
       </div>
 
-      <h3>Anzeigetafel</h3>
+      <h3 data-i18n>Anzeigetafel</h3>
       <div class="score">
         <div><button data-sc="0" data-d="-1">−</button><output id="sc0">0</output><button data-sc="0" data-d="1">+</button></div>
         <span>:</span>
         <div><button data-sc="1" data-d="-1">−</button><output id="sc1">0</output><button data-sc="1" data-d="1">+</button></div>
-        <button id="btnScoreReset">Zurücksetzen</button>
+        <button id="btnScoreReset" data-i18n>Zurücksetzen</button>
       </div>
 
-      <h3>Live-Text</h3>
-      <p class="hint">Wird regelmäßig neu gezeichnet und gesendet. Platzhalter: <code>{zeit}</code> <code>{zeitsek}</code> <code>{datum}</code> <code>{tag}</code> <code>{countdown}</code></p>
-      <label class="field"><span>Vorlage</span><input id="liveTpl" type="text" value="{zeit}  {tag}" /></label>
+      <h3 data-i18n>Live-Text</h3>
+      <p class="hint"><span data-i18n>Wird regelmäßig neu gezeichnet und gesendet. Platzhalter:</span>
+        <code>{zeit}</code> <code>{zeitsek}</code> <code>{datum}</code> <code>{tag}</code> <code>{countdown}</code>
+        <code>{temp}</code> <code>{wetter}</code> <code>{akku}</code> <code class="desktop-only">{cpu}</code> <code class="desktop-only">{ram}</code></p>
+      <label class="field"><span data-i18n>Vorlage</span><input id="liveTpl" type="text" value="{zeit}  {tag}" data-persist /></label>
       <div class="grid">
-        <label class="field"><span>Farbe</span><input id="liveColor" type="color" value="#ffd60a" /></label>
-        <label class="field"><span>Intervall (Sek.)</span><input id="liveInt" type="number" min="2" max="3600" value="10" /></label>
-        <label class="field"><span>Countdown-Ziel</span><input id="liveTarget" type="datetime-local" /></label>
+        <label class="field"><span data-i18n>Farbe</span><input id="liveColor" type="color" value="#ffd60a" data-persist /></label>
+        <label class="field"><span data-i18n>Intervall (Sek.)</span><input id="liveInt" type="number" min="2" max="3600" value="10" data-persist /></label>
+        <label class="field"><span data-i18n>Countdown-Ziel</span><input id="liveTarget" type="datetime-local" data-persist /></label>
       </div>
-      <div class="row"><button id="btnLive" class="primary">Live-Text starten</button></div>
+      <div class="row wrap">
+        <label class="field grow"><span data-i18n>Ort für das Wetter</span><input id="wxCity" type="text" placeholder="z. B. Köln" data-i18n-attr="placeholder" data-persist /></label>
+        <button id="btnWxFind" data-i18n>Ort suchen</button>
+      </div>
+      <p id="wxInfo" class="hint"></p>
+      <div class="row"><button id="btnLive" class="primary" data-i18n>Live-Text starten</button></div>
+
+      <div id="notifSection" hidden>
+        <h3 data-i18n>Benachrichtigungen vom Handy</h3>
+        <p class="hint" data-i18n>Zeigt eingehende Benachrichtigungen (z. B. WhatsApp) als Lauftext an. Funktioniert, solange PixelLeiste geöffnet oder im Hintergrund aktiv ist.</p>
+        <div class="row wrap">
+          <label class="check"><input id="notifOn" type="checkbox" data-persist /> <span data-i18n>Benachrichtigungen anzeigen</span></label>
+          <button id="btnNotifAccess" data-i18n>Zugriff erlauben …</button>
+        </div>
+        <div class="grid">
+          <label class="field"><span data-i18n>Nur diese Apps (leer = alle)</span><input id="notifApps" type="text" placeholder="WhatsApp, Signal" data-persist /></label>
+          <label class="field"><span data-i18n>Farbe</span><input id="notifColor" type="color" value="#34c759" data-persist /></label>
+          <label class="field"><span data-i18n>Danach zurück zu Speicherplatz</span><select class="slotSel" id="notifReturn" data-persist></select></label>
+          <label class="field"><span data-i18n>Anzeigedauer (Sek.)</span><input id="notifSecs" type="number" min="3" max="120" value="12" data-persist /></label>
+        </div>
+        <p id="notifSeen" class="hint"></p>
+      </div>
     </section>
 
     <!-- DEVICE -->
     <section class="panel" data-panel="device" hidden>
       <div class="row">
-        <button id="btnOn">Einschalten</button>
-        <button id="btnOff">Ausschalten</button>
+        <button id="btnOn" data-i18n>Einschalten</button>
+        <button id="btnOff" data-i18n>Ausschalten</button>
       </div>
-      <label class="field"><span>Helligkeit <output id="briOut">80</output> %</span>
-        <input id="bri" type="range" min="1" max="100" value="80" />
+      <label class="field"><span><span data-i18n>Helligkeit</span> <output id="briOut">80</output> %</span>
+        <input id="bri" type="range" min="1" max="100" value="80" data-persist />
       </label>
       <div class="grid">
-        <label class="field"><span>Ausrichtung</span>
-          <select id="orient">
-            <option value="0">Normal</option>
-            <option value="1">Variante 1</option>
-            <option value="2">Variante 2</option>
-            <option value="3">Variante 3</option>
+        <label class="field"><span data-i18n>Ausrichtung</span>
+          <select id="orient" data-persist>
+            <option value="0" data-i18n>Normal</option>
+            <option value="1" data-i18n>Variante 1</option>
+            <option value="2" data-i18n>Variante 2</option>
+            <option value="3" data-i18n>Variante 3</option>
           </select>
         </label>
-        <div class="field"><span>Uhrzeit</span><button id="btnSyncTime">Uhrzeit übertragen</button></div>
+        <div class="field"><span data-i18n>Uhrzeit</span><button id="btnSyncTime" data-i18n>Uhrzeit übertragen</button></div>
       </div>
 
-      <h3>Speicherplätze</h3>
+      <h3 data-i18n>Speicherplätze</h3>
       <div class="row wrap">
-        <label class="field tiny"><span>Platz</span><input id="slotNo" type="number" min="1" max="10" value="1" /></label>
-        <button id="btnShowSlot">Anzeigen</button>
-        <button id="btnDelSlot">Löschen</button>
-        <button id="btnClearAll" class="danger">Alles löschen …</button>
+        <label class="field tiny"><span data-i18n>Platz</span><input id="slotNo" type="number" min="1" max="10" value="1" /></label>
+        <button id="btnShowSlot" data-i18n>Anzeigen</button>
+        <button id="btnDelSlot" data-i18n>Löschen</button>
+        <button id="btnClearAll" class="danger" data-i18n>Alles löschen …</button>
       </div>
 
-      <h3>Verbindung</h3>
-      <label class="check"><input id="showAll" type="checkbox" /> Alle Bluetooth-Geräte in der Auswahl zeigen (falls die Leiste nicht „LED…“ heißt)</label>
-      <p id="devInfo" class="hint"></p>
+      <h3 data-i18n>Passwortschutz</h3>
+      <p class="hint" data-i18n>Mit Passwort kann sich niemand ohne die 6 Ziffern mit der Leiste verbinden. Passwort gut merken!</p>
+      <div class="row wrap">
+        <label class="field tiny wide"><span data-i18n>6 Ziffern</span><input id="pwNew" type="text" inputmode="numeric" maxlength="6" pattern="\d{6}" autocomplete="off" /></label>
+        <button id="btnPwSet" data-i18n>Passwort setzen</button>
+        <button id="btnPwOff" data-i18n>Passwort entfernen</button>
+      </div>
+
+      <h3 data-i18n>Verbindung</h3>
+      <label class="check"><input id="autoConnect" type="checkbox" checked data-persist /> <span data-i18n>Bekannte Leisten automatisch verbinden</span></label>
+      <label class="check"><input id="showAll" type="checkbox" data-persist /> <span data-i18n>Alle Bluetooth-Geräte in der Auswahl zeigen (falls die Leiste nicht „LED…“ heißt)</span></label>
+      <div id="knownList" class="known-list"></div>
+
+      <h3 data-i18n>App</h3>
+      <div class="grid">
+        <label class="field"><span data-i18n>Sprache</span>
+          <select id="lang"><option value="de">Deutsch</option><option value="en">English</option></select>
+        </label>
+        <div class="field"><span id="appVersion"></span><button id="btnCheckUpdate" data-i18n>Nach Updates suchen</button></div>
+      </div>
+      <label class="check"><input id="autoUpdate" type="checkbox" checked data-persist /> <span data-i18n>Beim Start nach Updates suchen</span></label>
       <details>
-        <summary>Protokoll</summary>
+        <summary data-i18n>Protokoll</summary>
         <pre id="log"></pre>
       </details>
     </section>
   </main>
 
   <dialog id="picker">
-    <h3>LED-Leiste auswählen</h3>
-    <p class="hint">Suche läuft … Leiste einschalten und in der Nähe halten.</p>
+    <h3 data-i18n>LED-Leiste auswählen</h3>
+    <p class="hint" data-i18n>Suche läuft … Leiste einschalten und in der Nähe halten.</p>
     <ul id="pickList"></ul>
-    <div class="row"><button id="pickCancel">Abbrechen</button></div>
+    <div class="row"><button id="pickCancel" data-i18n>Abbrechen</button></div>
+  </dialog>
+
+  <dialog id="prompt">
+    <h3 id="promptTitle"></h3>
+    <p id="promptText" class="hint"></p>
+    <input id="promptInput" type="text" />
+    <div class="row end"><button id="promptCancel" data-i18n>Abbrechen</button><button id="promptOk" class="primary" data-i18n>OK</button></div>
   </dialog>
 
   <div id="toast" role="status" aria-live="polite"></div>

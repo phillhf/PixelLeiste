@@ -1,7 +1,7 @@
 {
   "name": "pixelleiste",
   "productName": "PixelLeiste",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Steuerung für iPixel-kompatible LED-Leisten (96x16) per Bluetooth LE – Windows & Android",
   "author": "Phill (phillhf)",
   "homepage": "https://github.com/phillhf/PixelLeiste",
@@ -43,12 +43,14 @@
   "devDependencies": {
     "@capacitor-community/bluetooth-le": "^7.3.2",
     "@capacitor/android": "^7.6.9",
-    "@capacitor/core": "^7.6.9",
-    "gifenc": "^1.0.3",
-    "gifuct-js": "^2.1.2",
+    "@capacitor/browser": "^7.0.5",
     "@capacitor/cli": "^7.6.9",
+    "@capacitor/core": "^7.6.9",
+    "@playwright/test": "^1.64.1",
     "electron": "^33.4.11",
     "electron-builder": "^25.1.8",
+    "gifenc": "^1.0.3",
+    "gifuct-js": "^2.1.2",
     "typescript": "^5.9.3",
     "vite": "^6.4.5",
     "vitest": "^3.2.7"

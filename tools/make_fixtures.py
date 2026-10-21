@@ -49,6 +49,9 @@ c["timer_start"] = windows(set_timer.set_timer(1))
 c["scores_7_12"] = windows(set_scores.set_scores(7, 12))
 c["fun_on"] = windows(set_fun_mode.set_fun_mode(True))
 c["pixel"] = windows(set_fun_mode.set_pixel(5, 9, "ff8000"))
+from pypixelcolor.commands import set_rhythm_mode  # noqa: E402
+c["rhythm_chart"] = windows(set_rhythm_mode.set_rhythm_mode(3, 1, 4, 8, 12, 15, 10, 6, 3, 8, 12, 14))
+c["rhythm_mode"] = windows(set_rhythm_mode.set_rhythm_mode_2(1, 5))
 
 # Image transfers: arbitrary payloads, including a multi-window one (> 12 KB)
 small = bytes((i * 7 + 3) & 0xFF for i in range(300))

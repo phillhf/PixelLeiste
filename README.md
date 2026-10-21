@@ -1,85 +1,89 @@
-# PixelLeiste – Steuer-App für die 96×16 LED-Leiste
+# PixelLeiste
 
-Windows- und Android-App für die AliExpress-LED-Leiste **TR5645H135-08H (16×96)**.
-Die Leiste bekommt über USB nur Strom; gesteuert wird sie per **Bluetooth LE** mit dem
-Protokoll der App „iPixel Color“ (Gerätename meist `LED_BLE_…`).
+[Deutsch](README_de.md) · **English**
 
-## Funktionen
+Windows and Android app for LED strips and matrices of the **“iPixel Color” family** – e.g. the
+AliExpress strip **TR5645H135-08H (16×96)**. USB only powers the strip; it is controlled via
+**Bluetooth LE** (device name usually `LED_BLE_…`). No cloud, no account, no ads.
 
-| Bereich | Was geht |
+<p>
+  <img src="docs/screenshots/text-en.png" alt="Text view on Windows" width="560">
+  <img src="docs/screenshots/phone-en.png" alt="Android" width="200">
+</p>
+
+## Features
+
+| Area | What you can do |
 |---|---|
-| **Text** | Lauftext links/rechts, statisch, Blinken, Atmen, Schneeflocken · Farbe, Hintergrund, Regenbogen (9 Stile), Geschwindigkeit · Farbcodes im Text: `[#ff0000]rot[/] normal` |
-| **Bild / GIF** | PNG, JPG, WebP, BMP und animierte GIFs; automatisch auf 96×16 skaliert (füllen / einpassen / strecken, weich oder pixelgenau) |
-| **Zeichnen** | Pixel-Editor 96×16 mit Stift, Radierer, Füllen · „Live zeichnen“ überträgt jeden Pixel sofort |
-| **Uhr & Live** | 9 Uhr-Stile (mit Zeitabgleich), Stoppuhr, Countdown, Anzeigetafel, Live-Text mit `{zeit}`, `{zeitsek}`, `{datum}`, `{tag}`, `{countdown}` |
-| **Gerät** | Ein/Aus, Helligkeit, Ausrichtung, Uhrzeit übertragen, Speicherplätze 1–10 anzeigen/löschen, alles löschen |
+| **Text** | Strip font (pixel) with scrolling, blinking, breathing, snowflakes, 9 rainbow styles · **system fonts** (Arial, Impact …) with size/bold, **emojis** 😀 · colour codes in the text: `[#ff0000]red[/] normal` |
+| **Image / GIF** | PNG, JPG, WebP, BMP and animated GIFs, scaled to the panel size automatically |
+| **Draw** | Pixel editor with pen, eraser, fill · “draw live” sends every pixel immediately |
+| **Favourites & profiles** | Save texts, images and drawings with ★; load several favourites as a profile (“Car”, “Party” …) into slots 1–10 in one go |
+| **Music** | Equaliser driven by the phone’s/PC’s microphone · built-in rhythm effect |
+| **Clock & live** | 9 clock faces, stopwatch, countdown, scoreboard · live text with `{zeit}` (time), `{datum}` (date), `{tag}` (weekday), `{countdown}`, `{temp}`, `{wetter}` (weather), `{akku}` (battery) and on Windows `{cpu}`, `{ram}` · **Android:** notifications (e.g. WhatsApp) as scrolling text |
+| **Device** | On/off, brightness, orientation, slots, **password protection** |
+| **Connection** | **Several strips at once** · known strips **connect automatically** on start and reconnect after a drop-out |
+| **App** | German / English · **update check** (Windows updates itself) |
 
-Inhalte können „nur angezeigt“ oder in **Speicherplatz 1–10** abgelegt werden; die Leiste
-wechselt dann selbst zwischen den gespeicherten Inhalten.
+<p>
+  <img src="docs/screenshots/live-en.png" alt="Clock and live" width="420">
+  <img src="docs/screenshots/draw-en.png" alt="Draw" width="420">
+</p>
 
 ## Installation
 
-Downloads gibt es unter **[Releases](https://github.com/phillhf/PixelLeiste/releases/latest)**.
+Downloads: **[Releases](https://github.com/phillhf/PixelLeiste/releases/latest)**.
 
-**Windows** (Windows 10/11 mit Bluetooth, eingebaut oder USB-Stick):
-`PixelLeiste-Setup-<Version>.exe` herunterladen und starten. Das Setup braucht keine
-Administratorrechte, legt einen Startmenü-Eintrag und optional eine Desktop-Verknüpfung an und
-erkennt eine vorhandene Installation (Update). Deinstallation über „Apps“ bzw.
-„Programme und Features“; dabei kannst du wählen, ob die Einstellungen erhalten bleiben.
-Stille Installation: `PixelLeiste-Setup-<Version>.exe /VERYSILENT [/DIR="D:\PixelLeiste"] [/TASKS="desktopicon"]`
+**Windows** (10/11 with Bluetooth, built-in or a USB dongle): download and run
+`PixelLeiste-Setup-<version>.exe`. No administrator rights needed; Start menu entry and optional
+desktop shortcut; detects an existing installation (update). Uninstall via “Apps” – you can choose to
+keep your settings. PixelLeiste can install new versions itself.
+Silent install: `PixelLeiste-Setup-<version>.exe /VERYSILENT [/DIR="D:\PixelLeiste"] [/TASKS="desktopicon"]`
 
-**Android** (ab Android 6): `PixelLeiste-<Version>.apk` auf dem Handy herunterladen und
-öffnen („Installation aus unbekannten Quellen“ erlauben). Neue Versionen lassen sich einfach
-darüber installieren. Beim ersten Verbinden fragt die App nach der Berechtigung
-„Geräte in der Nähe“.
+> Windows SmartScreen may show “Unknown publisher” on first start – the setup is not code-signed
+> with a paid certificate. Click “More info → Run anyway”.
 
-> Wer vorher eine selbst gebaute Debug-APK installiert hatte, muss diese einmal deinstallieren –
-> die Release-APK ist mit einem anderen Schlüssel signiert.
+**Android** (6.0+): open `PixelLeiste-<version>.apk` on the phone and allow “install unknown apps”.
+New versions install right over it. Permissions: “Nearby devices” (Bluetooth), microphone only for
+the equaliser, notification access only if you turn on the notification display.
 
-## Bedienung
+## Usage
 
-1. Leiste per USB mit Strom versorgen. **Die Original-App „iPixel Color“ schließen** –
-   die Leiste akzeptiert nur eine Bluetooth-Verbindung gleichzeitig.
-2. **Verbinden** drücken und `LED_BLE_…` auswählen.
-   Taucht sie nicht auf: unter *Gerät → Verbindung* „Alle Bluetooth-Geräte zeigen“ anhaken.
-3. Text, Bild oder Zeichnung einstellen – die Vorschau oben zeigt das Ergebnis – und senden.
+1. Power the strip via USB. **Close the “iPixel Color” phone app** – the strip accepts only one
+   Bluetooth connection at a time.
+2. Press **Connect** and choose `LED_BLE_…`. Add more strips with **+ Strip**; the tick box on each
+   strip selects which ones receive content.
+3. Set up text, image or drawing – the preview at the top shows the result – and send it.
 
-## Entwickeln & Bauen
+If the strip does not show up: tick “Show all Bluetooth devices” under *Device → Connection*.
+The **log** under *Device* helps with troubleshooting.
 
-Eine Codebasis (TypeScript + Vite) für beide Plattformen:
+## Development
 
-| Pfad | Inhalt |
-|---|---|
-| `src/protocol/ipixel.ts` | Byte-Protokoll (Befehle, 12-KB-Fenster, CRC32, Zeichen-Bitmaps) |
-| `src/ble/connection.ts` | BLE-Verbindung, 244-Byte-Pakete, ACK-Handling |
-| `src/render/` | Pixelschrift (GNU Unifont), Bild-/GIF-Skalierung und -Kodierung |
-| `src/main.ts`, `index.html` | Oberfläche |
-| `electron/` | Windows-Hülle inkl. Bluetooth-Geräteauswahl |
-| `android/` | Capacitor-Android-Projekt |
+One code base (TypeScript + Vite) for both platforms – see [README_de.md](README_de.md#entwicklung)
+for the folder overview.
 
 ```bash
 npm install
-npm run dev          # Oberfläche im Browser (Chrome/Edge können per Web Bluetooth sogar direkt verbinden)
-npm test             # Protokoll-Tests gegen Referenzdaten
-npm run dist:win     # Windows-Setup nach release/ (benötigt Inno Setup 6)
-npm run android:apk  # Debug-APK (benötigt JAVA_HOME = JDK 17+ und ANDROID_HOME = Android-SDK)
+npm run dev          # UI in the browser (Chrome/Edge can connect directly via Web Bluetooth)
+npm test             # protocol and translation tests
+npx playwright test  # UI tests against simulated strips (desktop + phone)
+npm run dist:win     # Windows setup into release/ (needs Inno Setup 6)
+npm run android:apk  # debug APK (needs JAVA_HOME = JDK 17+ and ANDROID_HOME)
 ```
 
-**Release erstellen:** Version in `package.json` erhöhen, committen, pushen und auf GitHub eine
-Release mit dem Tag `v<Version>` veröffentlichen. Der Workflow `.github/workflows/release.yml`
-baut dann Windows-Setup und signierte APK (inkl. `.sha256`) und hängt sie an.
-Die APK-Signatur kommt aus den Repository-Secrets `PIXELLEISTE_KEYSTORE_BASE64` und
-`PIXELLEISTE_KEYSTORE_PASSWORD`; lokal genügen die Umgebungsvariablen `PIXELLEISTE_KEYSTORE`
-und `PIXELLEISTE_KEYSTORE_PASSWORD` für `gradlew assembleRelease`.
+**Releasing:** bump the version in `package.json`, commit, push and publish a GitHub release tagged
+`v<version>`. `.github/workflows/release.yml` builds the setup and the signed APK (with `.sha256`)
+and attaches them. APK signing uses the secrets `PIXELLEISTE_KEYSTORE_BASE64` and
+`PIXELLEISTE_KEYSTORE_PASSWORD`. Regenerate screenshots: `SCREENSHOTS=1 npx playwright test screenshots`.
 
-Die Testdaten `tests/fixtures.json` stammen aus der Referenzimplementierung
-[pypixelcolor](https://github.com/lucagoc/pypixelcolor) (MIT) und werden mit
-`tools/make_fixtures.py` erzeugt. Die Pixelschrift ist GNU Unifont (SIL OFL 1.1).
+## Credits & licence
 
-## Hinweise
+MIT licence. The Bluetooth protocol is based on the reverse-engineering work of
+[pypixelcolor](https://github.com/lucagoc/pypixelcolor) (MIT) and
+[hass-ble-led-sign](https://github.com/eigger/hass-ble-led-sign); the generated commands are tested
+byte-for-byte against pypixelcolor. Pixel font: GNU Unifont (SIL OFL 1.1).
+Weather data: [Open-Meteo](https://open-meteo.com) (CC BY 4.0).
 
-- Getestet sind die erzeugten Bytes (identisch zur Referenz) und die Oberfläche; die Funk-Strecke
-  selbst konnte ohne die echte Leiste nicht getestet werden. Klappt etwas nicht, hilft das
-  **Protokoll** unter *Gerät* bei der Fehlersuche.
-- Ausrichtung, Uhr-Stile und Anzeigetafel folgen der Community-Dokumentation; einzelne Firmware-Versionen
-  können sich anders verhalten.
+Some settings (orientation, the clock’s 24 h switch, scoreboard) follow community documentation;
+individual firmware versions may behave differently.

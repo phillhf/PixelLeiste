@@ -77,8 +77,9 @@ export const clearAll = () => single('clear', [4, 0, 3, 0x80]);
 export const showSlot = (n: number) => single('show_slot', [7, 0, 8, 0x80, 1, 0, clamp(n, 0, 255)]);
 export const deleteSlot = (n: number) => single('delete_slot', [7, 0, 2, 1, 1, 0, clamp(n, 0, 255)]);
 
+/** Same bytes as getDeviceInfo – the panel answers with an info frame, not an ACK, so don't wait. */
 export function setTime(now = new Date()): SendPlan {
-  return single('set_time', [8, 0, 1, 0x80, now.getHours(), now.getMinutes(), now.getSeconds(), 0]);
+  return single('set_time', [8, 0, 1, 0x80, now.getHours(), now.getMinutes(), now.getSeconds(), 0], false);
 }
 
 /** Clock face 0..8. Weekday: Monday = 1 … Sunday = 7. */
@@ -107,6 +108,39 @@ export const setFunMode = (enable: boolean) => single('fun_mode', [5, 0, 4, 1, e
 
 export const setPixel = (x: number, y: number, r: number, g: number, b: number) =>
   single('pixel', [10, 0, 5, 1, 0, r & 0xff, g & 0xff, b & 0xff, x & 0xff, y & 0xff], false);
+
+// ---------------------------------------------------------------------------
+// Music
+
+/** Built-in rhythm animation (style 0..1, animation time 0..7). */
+export const setRhythmMode = (style: number, time: number) =>
+  single('rhythm', [6, 0, 0, 2, clamp(time, 0, 7), clamp(style, 0, 1)]);
+
+/**
+ * 11-bar equaliser frame (style 0..4, bar heights 1..15). Sent without waiting for an ACK
+ * so it can be streamed from a microphone.
+ */
+export function setRhythmChart(style: number, levels: number[]): SendPlan {
+  const bars = Array.from({ length: 11 }, (_, i) => clamp(levels[i] ?? 1, 1, 15));
+  return single('rhythm_chart', [16, 0, 1, 2, clamp(style, 0, 4), ...bars], false);
+}
+
+// ---------------------------------------------------------------------------
+// Password (6 digits, sent as three two-digit numbers)
+
+function passwordBytes(pw: string): number[] {
+  const p = pw.replace(/\D/g, '').slice(0, 6).padStart(6, '0');
+  return [Number(p.slice(0, 2)), Number(p.slice(2, 4)), Number(p.slice(4, 6))];
+}
+
+/** enable = false removes the password protection. */
+export const setPassword = (enable: boolean, pw: string) =>
+  single('password_set', [8, 0, 4, 2, enable ? 1 : 0, ...passwordBytes(pw)]);
+
+export const verifyPassword = (pw: string) => single('password_verify', [7, 0, 5, 2, ...passwordBytes(pw)]);
+
+/** Device info byte 10: 255 = no password set. */
+export const needsPassword = (info: DeviceInfo) => info.passwordFlag !== 255 && info.passwordFlag !== 0;
 
 // ---------------------------------------------------------------------------
 // Windowed transfers (images, GIFs, text)

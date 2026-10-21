@@ -4,6 +4,7 @@
 ;
 ; Ohne Administratorrechte. Einstellungen liegen unter %APPDATA%\PixelLeiste.
 ; Stilles Setup:  PixelLeiste-Setup-x.y.z.exe /VERYSILENT [/DIR="D:\PixelLeiste"] [/TASKS="desktopicon"]
+;   [/RESTARTAPP=1 (PixelLeiste nach dem Update wieder starten - so ruft es die Update-Funktion auf)]
 
 #ifndef AppVersion
   #define AppVersion "0.0.0"
@@ -96,6 +97,7 @@ Type: filesandordirs; Name: "{app}\locales"
 [Files]
 Source: "{#AppDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\README.md"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\README_de.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\LICENSE"; DestDir: "{app}"; DestName: "LICENSE.txt"; Flags: ignoreversion
 
 [Icons]
@@ -105,6 +107,8 @@ Name: "{autodesktop}\PixelLeiste"; Filename: "{app}\PixelLeiste.exe"; WorkingDir
 
 [Run]
 Filename: "{app}\PixelLeiste.exe"; WorkingDir: "{app}"; Description: "{cm:LaunchNow}"; Flags: postinstall nowait skipifsilent
+; Nach einem Update ueber die eingebaute Update-Funktion PixelLeiste wieder starten
+Filename: "{app}\PixelLeiste.exe"; WorkingDir: "{app}"; Flags: nowait; Check: RestartAfterSilentUpdate
 
 [UninstallDelete]
 Type: dirifempty; Name: "{app}"
@@ -190,6 +194,26 @@ begin
     Result := Result + CustomMessage('OpInstall');
   Result := Result + NewLine + NewLine + MemoDirInfo;
   if MemoTasksInfo <> '' then Result := Result + NewLine + NewLine + MemoTasksInfo;
+end;
+
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+var
+  Code: Integer;
+begin
+  // Stilles Update aus dem Programm heraus: laufendes PixelLeiste beenden, damit die Dateien ersetzt werden koennen.
+  // (Interaktiv fragt Inno Setup selbst nach, ob laufende Programme geschlossen werden sollen.)
+  if WizardSilent() then
+  begin
+    Sleep(1500);
+    Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /IM PixelLeiste.exe', '', SW_HIDE, ewWaitUntilTerminated, Code);
+    Sleep(500);
+  end;
+  Result := '';
+end;
+
+function RestartAfterSilentUpdate(): Boolean;
+begin
+  Result := WizardSilent() and (ExpandConstant('{param:RESTARTAPP|0}') = '1');
 end;
 
 procedure CurPageChanged(CurPageID: Integer);

@@ -1,8 +1,12 @@
 import { defineConfig } from 'vite';
+import { readFileSync } from 'node:fs';
+
+const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
 
 export default defineConfig({
+  define: { __APP_VERSION__: JSON.stringify(pkg.version) },
   // Relative asset paths so the build works from file:// (Electron) and the Android WebView.
   base: './',
   build: { outDir: 'dist', emptyOutDir: true, target: 'es2022' },
-  test: { environment: 'node' },
+  test: { environment: 'node', include: ['tests/**/*.test.ts'] },
 } as any);

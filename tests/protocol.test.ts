@@ -31,8 +31,19 @@ describe('simple commands', () => {
     ['scores_7_12', P.setScores(7, 12)],
     ['fun_on', P.setFunMode(true)],
     ['pixel', P.setPixel(5, 9, 0xff, 0x80, 0x00)],
+    ['rhythm_chart', P.setRhythmChart(3, [1, 4, 8, 12, 15, 10, 6, 3, 8, 12, 14])],
+    ['rhythm_mode', P.setRhythmMode(1, 5)],
   ] as const)('%s', (name, plan) => {
     expect(hexOf(plan)).toEqual((c as Record<string, string[]>)[name]);
+  });
+
+  // Not in pypixelcolor – byte layouts from the Home Assistant iPixel driver (hass-ble-led-sign).
+  it('password commands', () => {
+    // "123456" → 12, 34, 56 → 0c 22 38
+    expect(hexOf(P.setPassword(true, '123456'))).toEqual(['08000402010c2238']);
+    expect(hexOf(P.setPassword(false, ''))).toEqual(['0800040200000000']);
+    // "012345" → 01, 23, 45 → 01 17 2d
+    expect(hexOf(P.verifyPassword('012345'))).toEqual(['0700050201172d']);
   });
 });
 

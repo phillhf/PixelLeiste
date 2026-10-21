@@ -82,15 +82,23 @@ export async function encodePng(c: HTMLCanvasElement): Promise<Uint8Array> {
   return new Uint8Array(await blob.arrayBuffer());
 }
 
-export function encodeGif(frames: Frame[]): Uint8Array {
+/**
+ * One global palette (from a sample of the frames) instead of one per frame keeps the GIF small –
+ * important because every byte has to go over Bluetooth.
+ */
+export function encodeGif(frames: Frame[], maxColors = 256): Uint8Array {
+  const data = frames.map((f) => f.canvas.getContext('2d', { willReadFrequently: true })!.getImageData(0, 0, f.canvas.width, f.canvas.height).data);
+  const sampleStep = Math.max(1, Math.floor(frames.length / 16));
+  const samples = data.filter((_, i) => i % sampleStep === 0);
+  const sample = new Uint8ClampedArray(samples.reduce((n, d) => n + d.length, 0));
+  samples.reduce((off, d) => { sample.set(d, off); return off + d.length; }, 0);
+  const palette = quantize(sample, maxColors);
+
   const enc = GIFEncoder();
-  for (const f of frames) {
-    const { width, height } = f.canvas;
-    const rgba = f.canvas.getContext('2d')!.getImageData(0, 0, width, height).data;
-    const palette = quantize(rgba, 256);
-    const index = applyPalette(rgba, palette);
-    enc.writeFrame(index, width, height, { palette, delay: f.delay, repeat: 0 });
-  }
+  frames.forEach((f, i) => {
+    const index = applyPalette(data[i], palette);
+    enc.writeFrame(index, f.canvas.width, f.canvas.height, i === 0 ? { palette, delay: f.delay, repeat: 0 } : { delay: f.delay });
+  });
   enc.finish();
   return enc.bytes();
 }
