@@ -43,6 +43,27 @@ app.whenReady().then(async () => {
   fs.writeFileSync(path.join(ROOT, 'build', 'icon.png'), await render(win, 512));
   fs.writeFileSync(path.join(ROOT, 'public', 'icon.png'), await render(win, 192));
 
+  // Windows .ico (PNG-compressed entries) for the EXE and the setup
+  const icoSizes = [16, 24, 32, 48, 64, 128, 256];
+  const pngs = [];
+  for (const s of icoSizes) pngs.push(await render(win, s));
+  const header = Buffer.alloc(6 + 16 * pngs.length);
+  header.writeUInt16LE(0, 0);
+  header.writeUInt16LE(1, 2);
+  header.writeUInt16LE(pngs.length, 4);
+  let offset = header.length;
+  pngs.forEach((png, i) => {
+    const e = 6 + 16 * i, s = icoSizes[i];
+    header.writeUInt8(s >= 256 ? 0 : s, e);
+    header.writeUInt8(s >= 256 ? 0 : s, e + 1);
+    header.writeUInt16LE(1, e + 4);
+    header.writeUInt16LE(32, e + 6);
+    header.writeUInt32LE(png.length, e + 8);
+    header.writeUInt32LE(offset, e + 12);
+    offset += png.length;
+  });
+  fs.writeFileSync(path.join(ROOT, 'installer', 'app.ico'), Buffer.concat([header, ...pngs]));
+
   const dens = { mdpi: 1, hdpi: 1.5, xhdpi: 2, xxhdpi: 3, xxxhdpi: 4 };
   for (const [d, f] of Object.entries(dens)) {
     const dir = path.join(RES, `mipmap-${d}`);

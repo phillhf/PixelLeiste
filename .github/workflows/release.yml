@@ -1,0 +1,98 @@
+name: Build Windows installer and Android APK
+
+# Baut bei jeder veroeffentlichten Release PixelLeiste-Setup-<Version>.exe und PixelLeiste-<Version>.apk
+# (jeweils mit .sha256) und haengt sie an die Release an.
+# Die APK wird mit dem Release-Schluessel aus den Secrets PIXELLEISTE_KEYSTORE_BASE64 und
+# PIXELLEISTE_KEYSTORE_PASSWORD signiert, damit Updates sich ueber die vorhandene App installieren lassen.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to build for (e.g. v1.0.0)"
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  TAG: ${{ github.event.release.tag_name || inputs.tag }}
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Tag und Version abgleichen
+        shell: pwsh
+        run: |
+          $v = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          if ("v$v" -ne $env:TAG) { throw "Tag $env:TAG passt nicht zu Version $v in package.json" }
+
+      - name: Werkzeuge bereitstellen
+        shell: pwsh
+        run: |
+          npm ci
+          if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) { choco install innosetup -y --no-progress }
+
+      - name: Setup bauen
+        shell: pwsh
+        run: ./installer/build.ps1
+
+      - name: An die Release anhaengen
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $setup = Get-ChildItem release\PixelLeiste-Setup-*.exe | Select-Object -First 1
+          gh release upload $env:TAG $setup.FullName "$($setup.FullName).sha256" --clobber
+
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Web-Build und Capacitor-Sync
+        run: |
+          npm ci
+          npm run android:sync
+
+      - name: Signierte APK bauen
+        env:
+          PIXELLEISTE_KEYSTORE_BASE64: ${{ secrets.PIXELLEISTE_KEYSTORE_BASE64 }}
+          PIXELLEISTE_KEYSTORE_PASSWORD: ${{ secrets.PIXELLEISTE_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$PIXELLEISTE_KEYSTORE_BASE64" ]; then echo "Secret PIXELLEISTE_KEYSTORE_BASE64 fehlt"; exit 1; fi
+          echo "$PIXELLEISTE_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          export PIXELLEISTE_KEYSTORE="$RUNNER_TEMP/release.jks"
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon -q
+
+      - name: An die Release anhaengen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          v="${TAG#v}"
+          apk="PixelLeiste-$v.apk"
+          cp android/app/build/outputs/apk/release/app-release.apk "$apk"
+          sha256sum "$apk" > "$apk.sha256"
+          gh release upload "$TAG" "$apk" "$apk.sha256" --clobber

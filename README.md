@@ -19,13 +19,22 @@ wechselt dann selbst zwischen den gespeicherten Inhalten.
 
 ## Installation
 
-**Windows** (Windows 10/11 mit Bluetooth):
-`release\PixelLeiste 1.0.0.exe` (portabel, einfach starten) oder
-`release\PixelLeiste Setup 1.0.0.exe` (Installer).
+Downloads gibt es unter **[Releases](https://github.com/phillhf/PixelLeiste/releases/latest)**.
 
-**Android** (ab Android 6): `android\app\build\outputs\apk\debug\app-debug.apk` aufs Handy
-kopieren und installieren („Installation aus unbekannten Quellen“ erlauben). Beim ersten
-Verbinden nach der Berechtigung „Geräte in der Nähe“ fragt die App.
+**Windows** (Windows 10/11 mit Bluetooth, eingebaut oder USB-Stick):
+`PixelLeiste-Setup-<Version>.exe` herunterladen und starten. Das Setup braucht keine
+Administratorrechte, legt einen Startmenü-Eintrag und optional eine Desktop-Verknüpfung an und
+erkennt eine vorhandene Installation (Update). Deinstallation über „Apps“ bzw.
+„Programme und Features“; dabei kannst du wählen, ob die Einstellungen erhalten bleiben.
+Stille Installation: `PixelLeiste-Setup-<Version>.exe /VERYSILENT [/DIR="D:\PixelLeiste"] [/TASKS="desktopicon"]`
+
+**Android** (ab Android 6): `PixelLeiste-<Version>.apk` auf dem Handy herunterladen und
+öffnen („Installation aus unbekannten Quellen“ erlauben). Neue Versionen lassen sich einfach
+darüber installieren. Beim ersten Verbinden fragt die App nach der Berechtigung
+„Geräte in der Nähe“.
+
+> Wer vorher eine selbst gebaute Debug-APK installiert hatte, muss diese einmal deinstallieren –
+> die Release-APK ist mit einem anderen Schlüssel signiert.
 
 ## Bedienung
 
@@ -52,9 +61,16 @@ Eine Codebasis (TypeScript + Vite) für beide Plattformen:
 npm install
 npm run dev          # Oberfläche im Browser (Chrome/Edge können per Web Bluetooth sogar direkt verbinden)
 npm test             # Protokoll-Tests gegen Referenzdaten
-npm run dist:win     # Windows-.exe nach release/
-npm run android:apk  # APK (benötigt JAVA_HOME = JDK 17+ und ANDROID_HOME = Android-SDK)
+npm run dist:win     # Windows-Setup nach release/ (benötigt Inno Setup 6)
+npm run android:apk  # Debug-APK (benötigt JAVA_HOME = JDK 17+ und ANDROID_HOME = Android-SDK)
 ```
+
+**Release erstellen:** Version in `package.json` erhöhen, committen, pushen und auf GitHub eine
+Release mit dem Tag `v<Version>` veröffentlichen. Der Workflow `.github/workflows/release.yml`
+baut dann Windows-Setup und signierte APK (inkl. `.sha256`) und hängt sie an.
+Die APK-Signatur kommt aus den Repository-Secrets `PIXELLEISTE_KEYSTORE_BASE64` und
+`PIXELLEISTE_KEYSTORE_PASSWORD`; lokal genügen die Umgebungsvariablen `PIXELLEISTE_KEYSTORE`
+und `PIXELLEISTE_KEYSTORE_PASSWORD` für `gradlew assembleRelease`.
 
 Die Testdaten `tests/fixtures.json` stammen aus der Referenzimplementierung
 [pypixelcolor](https://github.com/lucagoc/pypixelcolor) (MIT) und werden mit

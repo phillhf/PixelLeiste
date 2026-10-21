@@ -1,5 +1,12 @@
 apply plugin: 'com.android.application'
 
+// Version kommt aus package.json (x.y.z → versionCode x*10000 + y*100 + z)
+def appVersion = new groovy.json.JsonSlurper().parse(file('../../package.json')).version
+def (vMajor, vMinor, vPatch) = appVersion.tokenize('.').collect { it as int }
+
+// Release-Signatur über Umgebungsvariablen (lokal oder als GitHub-Secrets im Release-Workflow)
+def keystorePath = System.getenv('PIXELLEISTE_KEYSTORE')
+
 android {
     namespace "de.phill.pixelleiste"
     compileSdk rootProject.ext.compileSdkVersion
@@ -7,8 +14,8 @@ android {
         applicationId "de.phill.pixelleiste"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode vMajor * 10000 + vMinor * 100 + vPatch
+        versionName appVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,8 +23,19 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            if (keystorePath) {
+                storeFile file(keystorePath)
+                storePassword System.getenv('PIXELLEISTE_KEYSTORE_PASSWORD')
+                keyAlias System.getenv('PIXELLEISTE_KEY_ALIAS') ?: 'pixelleiste'
+                keyPassword System.getenv('PIXELLEISTE_KEY_PASSWORD') ?: System.getenv('PIXELLEISTE_KEYSTORE_PASSWORD')
+            }
+        }
+    }
     buildTypes {
         release {
+            if (keystorePath) signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
