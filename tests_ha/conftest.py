@@ -93,7 +93,7 @@ def panel():
 @pytest.fixture
 def mock_ble(panel):
     """Patches HA's bluetooth lookups and bleak-retry-connector with the simulated panel."""
-    device = BLEDevice(ADDRESS, NAME, {}, -60)
+    device = BLEDevice(ADDRESS, NAME, {})
 
     async def fake_connect(_cls, _device, _name, disconnected_callback=None, **_kw):
         panel.connects += 1
@@ -111,5 +111,5 @@ def service_info(name: str = NAME, address: str = ADDRESS) -> BluetoothServiceIn
     return BluetoothServiceInfoBleak(
         name=name, address=address, rssi=-60, manufacturer_data={}, service_data={},
         service_uuids=["000000fa-0000-1000-8000-00805f9b34fb"], source="local",
-        device=BLEDevice(address, name, {}, -60), advertisement=None, connectable=True, time=0, tx_power=None,
+        device=BLEDevice(address, name, {}), advertisement=None, connectable=True, time=0, tx_power=None,
     )
