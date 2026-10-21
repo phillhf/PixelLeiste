@@ -36,7 +36,10 @@ jobs:
         with:
           python-version: "3.13"
       - name: Testumgebung
-        run: pip install pytest-homeassistant-custom-component
+        run: |
+          pip install pytest-homeassistant-custom-component
+          # Python packages of the Bluetooth components the integration depends on
+          pip install $(python tests_ha/component_requirements.py bluetooth bluetooth_adapters usb)
       - name: Integrationstests (simulierte Leiste)
         run: pytest -v
 

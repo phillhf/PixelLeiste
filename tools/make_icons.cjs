@@ -43,6 +43,12 @@ app.whenReady().then(async () => {
   fs.writeFileSync(path.join(ROOT, 'build', 'icon.png'), await render(win, 512));
   fs.writeFileSync(path.join(ROOT, 'public', 'icon.png'), await render(win, 192));
 
+  // Home Assistant integration brand images
+  const brand = path.join(ROOT, 'custom_components', 'pixelleiste', 'brand');
+  fs.mkdirSync(brand, { recursive: true });
+  fs.writeFileSync(path.join(brand, 'icon.png'), await render(win, 256));
+  fs.writeFileSync(path.join(brand, 'icon@2x.png'), await render(win, 512));
+
   // Windows .ico (PNG-compressed entries) for the EXE and the setup
   const icoSizes = [16, 24, 32, 48, 64, 128, 256];
   const pngs = [];

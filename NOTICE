@@ -1,0 +1,8 @@
+PixelLeiste – Hinweise zu Komponenten Dritter / third-party notices
+
+
+- GNU Unifont (public/fonts/unifont.otf): SIL Open Font License 1.1,
+  see public/fonts/UNIFONT_LICENSE.txt
+- Protocol knowledge from pypixelcolor (https://github.com/lucagoc/pypixelcolor),
+  MIT License, Copyright (c) 2025 Lucas Balmès
+- Wetterdaten / weather data: Open-Meteo (https://open-meteo.com), CC BY 4.0
