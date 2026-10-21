@@ -1,0 +1,56 @@
+{
+  "name": "pixelleiste",
+  "productName": "PixelLeiste",
+  "version": "1.0.0",
+  "description": "Steuerung für iPixel-kompatible LED-Leisten (96x16) per Bluetooth LE – Windows & Android",
+  "author": "phill_ger",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "test": "vitest run",
+    "electron": "npm run build && electron .",
+    "dist:win": "npm run build && electron-builder --win portable nsis",
+    "android:sync": "npm run build && cap sync android",
+    "android:apk": "npm run android:sync && cd android && gradlew.bat assembleDebug"
+  },
+  "build": {
+    "appId": "de.phill.pixelleiste",
+    "productName": "PixelLeiste",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*"
+    ],
+    "win": {
+      "target": [
+        "portable",
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "dependencies": {
+    "@capacitor-community/bluetooth-le": "^7.3.2",
+    "@capacitor/android": "^7.6.9",
+    "@capacitor/core": "^7.6.9",
+    "gifenc": "^1.0.3",
+    "gifuct-js": "^2.1.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.6.9",
+    "electron": "^33.4.11",
+    "electron-builder": "^25.1.8",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.5",
+    "vitest": "^3.2.7"
+  }
+}

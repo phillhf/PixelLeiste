@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>PixelLeiste</title>
+  <link rel="stylesheet" href="./src/style.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="7" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="17" cy="12" r="1.4" fill="currentColor"/></svg>
+      <span>PixelLeiste</span>
+    </div>
+    <div class="conn">
+      <span id="status" class="status off">Nicht verbunden</span>
+      <button id="btnConnect" class="primary">Verbinden</button>
+    </div>
+  </header>
+
+  <section class="preview-wrap">
+    <canvas id="preview" width="96" height="16" aria-label="Vorschau der LED-Leiste"></canvas>
+    <div id="progress" class="progress" hidden><div></div></div>
+  </section>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="text" aria-selected="true">Text</button>
+    <button role="tab" data-tab="image">Bild / GIF</button>
+    <button role="tab" data-tab="draw">Zeichnen</button>
+    <button role="tab" data-tab="live">Uhr &amp; Live</button>
+    <button role="tab" data-tab="device">Gerät</button>
+  </nav>
+
+  <main>
+    <!-- TEXT -->
+    <section class="panel" data-panel="text">
+      <label class="field">
+        <span>Text <small>Farbcodes möglich: <code>[#ff0000]rot[/] normal</code></small></span>
+        <textarea id="txt" rows="2" maxlength="255">Hallo Welt!</textarea>
+      </label>
+      <div class="grid">
+        <label class="field"><span>Effekt</span>
+          <select id="txtAnim">
+            <option value="0">Statisch</option>
+            <option value="1" selected>Lauftext nach links</option>
+            <option value="2">Lauftext nach rechts</option>
+            <option value="5">Blinken</option>
+            <option value="6">Atmen / Fade</option>
+            <option value="7">Schneeflocken</option>
+          </select>
+        </label>
+        <label class="field"><span>Regenbogen</span>
+          <select id="txtRainbow">
+            <option value="0">Aus</option>
+            <option value="1">Stil 1</option><option value="2">Stil 2</option><option value="3">Stil 3</option>
+            <option value="4">Stil 4</option><option value="5">Stil 5</option><option value="6">Stil 6</option>
+            <option value="7">Stil 7</option><option value="8">Stil 8</option><option value="9">Stil 9</option>
+          </select>
+        </label>
+        <label class="field"><span>Textfarbe</span><input id="txtColor" type="color" value="#ff3b30" /></label>
+        <label class="field"><span><input id="txtBgOn" type="checkbox" /> Hintergrund</span><input id="txtBg" type="color" value="#000040" /></label>
+      </div>
+      <label class="field"><span>Geschwindigkeit <output id="txtSpeedOut">60</output></span>
+        <input id="txtSpeed" type="range" min="0" max="100" value="60" />
+      </label>
+      <div class="row">
+        <label class="field slot"><span>Speichern in</span><select class="slotSel" id="txtSlot"></select></label>
+        <button id="btnText" class="primary big">Text senden</button>
+      </div>
+    </section>
+
+    <!-- IMAGE -->
+    <section class="panel" data-panel="image" hidden>
+      <label class="drop" id="drop">
+        <input id="imgFile" type="file" accept="image/png,image/jpeg,image/gif,image/webp,image/bmp" />
+        <span id="imgName">Bild oder animiertes GIF auswählen …</span>
+      </label>
+      <div class="grid">
+        <label class="field"><span>Anpassen</span>
+          <select id="imgFit">
+            <option value="crop">Füllen (zuschneiden)</option>
+            <option value="fit">Einpassen (Ränder)</option>
+            <option value="stretch">Strecken</option>
+          </select>
+        </label>
+        <label class="field"><span>Skalierung</span>
+          <select id="imgSmooth">
+            <option value="1">Weich (Fotos)</option>
+            <option value="0">Pixelgenau (Pixel-Art)</option>
+          </select>
+        </label>
+      </div>
+      <p id="imgInfo" class="hint"></p>
+      <div class="row">
+        <label class="field slot"><span>Speichern in</span><select class="slotSel" id="imgSlot"></select></label>
+        <button id="btnImage" class="primary big" disabled>Bild senden</button>
+      </div>
+    </section>
+
+    <!-- DRAW -->
+    <section class="panel" data-panel="draw" hidden>
+      <div class="draw-tools">
+        <input id="drawColor" type="color" value="#00e5ff" aria-label="Farbe" />
+        <div id="swatches" class="swatches"></div>
+        <div class="seg" role="group" aria-label="Werkzeug">
+          <button data-tool="pen" class="on">Stift</button>
+          <button data-tool="erase">Radierer</button>
+          <button data-tool="fill">Füllen</button>
+        </div>
+      </div>
+      <div class="draw-wrap"><canvas id="drawCanvas" width="96" height="16"></canvas></div>
+      <div class="row wrap">
+        <label class="check"><input id="drawLive" type="checkbox" /> Live auf der Leiste zeichnen</label>
+        <button id="btnDrawClear">Leeren</button>
+        <button id="btnDrawFromPreview">Vorschau übernehmen</button>
+      </div>
+      <div class="row">
+        <label class="field slot"><span>Speichern in</span><select class="slotSel" id="drawSlot"></select></label>
+        <button id="btnDraw" class="primary big">Zeichnung senden</button>
+      </div>
+    </section>
+
+    <!-- LIVE -->
+    <section class="panel" data-panel="live" hidden>
+      <h3>Uhr</h3>
+      <div class="grid">
+        <label class="field"><span>Ziffernblatt</span>
+          <select id="clkStyle"></select>
+        </label>
+        <label class="check"><input id="clk24" type="checkbox" checked /> 24-Stunden</label>
+        <label class="check"><input id="clkDate" type="checkbox" checked /> Datum anzeigen</label>
+      </div>
+      <div class="row"><button id="btnClock" class="primary">Uhr anzeigen (mit Zeitabgleich)</button></div>
+
+      <h3>Stoppuhr</h3>
+      <div class="row">
+        <button data-sw="1">Start</button><button data-sw="2">Pause</button><button data-sw="0">Stopp</button>
+      </div>
+
+      <h3>Countdown</h3>
+      <div class="row wrap">
+        <label class="field tiny"><span>Min</span><input id="cdMin" type="number" min="0" max="255" value="5" /></label>
+        <label class="field tiny"><span>Sek</span><input id="cdSec" type="number" min="0" max="59" value="0" /></label>
+        <button data-cd="1">Start</button><button data-cd="2">Pause</button><button data-cd="0">Stopp</button>
+      </div>
+
+      <h3>Anzeigetafel</h3>
+      <div class="score">
+        <div><button data-sc="0" data-d="-1">−</button><output id="sc0">0</output><button data-sc="0" data-d="1">+</button></div>
+        <span>:</span>
+        <div><button data-sc="1" data-d="-1">−</button><output id="sc1">0</output><button data-sc="1" data-d="1">+</button></div>
+        <button id="btnScoreReset">Zurücksetzen</button>
+      </div>
+
+      <h3>Live-Text</h3>
+      <p class="hint">Wird regelmäßig neu gezeichnet und gesendet. Platzhalter: <code>{zeit}</code> <code>{zeitsek}</code> <code>{datum}</code> <code>{tag}</code> <code>{countdown}</code></p>
+      <label class="field"><span>Vorlage</span><input id="liveTpl" type="text" value="{zeit}  {tag}" /></label>
+      <div class="grid">
+        <label class="field"><span>Farbe</span><input id="liveColor" type="color" value="#ffd60a" /></label>
+        <label class="field"><span>Intervall (Sek.)</span><input id="liveInt" type="number" min="2" max="3600" value="10" /></label>
+        <label class="field"><span>Countdown-Ziel</span><input id="liveTarget" type="datetime-local" /></label>
+      </div>
+      <div class="row"><button id="btnLive" class="primary">Live-Text starten</button></div>
+    </section>
+
+    <!-- DEVICE -->
+    <section class="panel" data-panel="device" hidden>
+      <div class="row">
+        <button id="btnOn">Einschalten</button>
+        <button id="btnOff">Ausschalten</button>
+      </div>
+      <label class="field"><span>Helligkeit <output id="briOut">80</output> %</span>
+        <input id="bri" type="range" min="1" max="100" value="80" />
+      </label>
+      <div class="grid">
+        <label class="field"><span>Ausrichtung</span>
+          <select id="orient">
+            <option value="0">Normal</option>
+            <option value="1">Variante 1</option>
+            <option value="2">Variante 2</option>
+            <option value="3">Variante 3</option>
+          </select>
+        </label>
+        <div class="field"><span>Uhrzeit</span><button id="btnSyncTime">Uhrzeit übertragen</button></div>
+      </div>
+
+      <h3>Speicherplätze</h3>
+      <div class="row wrap">
+        <label class="field tiny"><span>Platz</span><input id="slotNo" type="number" min="1" max="10" value="1" /></label>
+        <button id="btnShowSlot">Anzeigen</button>
+        <button id="btnDelSlot">Löschen</button>
+        <button id="btnClearAll" class="danger">Alles löschen …</button>
+      </div>
+
+      <h3>Verbindung</h3>
+      <label class="check"><input id="showAll" type="checkbox" /> Alle Bluetooth-Geräte in der Auswahl zeigen (falls die Leiste nicht „LED…“ heißt)</label>
+      <p id="devInfo" class="hint"></p>
+      <details>
+        <summary>Protokoll</summary>
+        <pre id="log"></pre>
+      </details>
+    </section>
+  </main>
+
+  <dialog id="picker">
+    <h3>LED-Leiste auswählen</h3>
+    <p class="hint">Suche läuft … Leiste einschalten und in der Nähe halten.</p>
+    <ul id="pickList"></ul>
+    <div class="row"><button id="pickCancel">Abbrechen</button></div>
+  </dialog>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="./src/main.ts"></script>
+</body>
+</html>

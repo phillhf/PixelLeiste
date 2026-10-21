@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">PixelLeiste</string>
+    <string name="title_activity_main">PixelLeiste</string>
+    <string name="package_name">de.phill.pixelleiste</string>
+    <string name="custom_url_scheme">de.phill.pixelleiste</string>
+</resources>
