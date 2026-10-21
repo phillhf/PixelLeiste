@@ -107,9 +107,10 @@ def mock_ble(panel):
         yield panel
 
 
-def service_info(name: str = NAME, address: str = ADDRESS) -> BluetoothServiceInfoBleak:
+def service_info(name: str = NAME, address: str = ADDRESS, panel_service: bool = True) -> BluetoothServiceInfoBleak:
     return BluetoothServiceInfoBleak(
         name=name, address=address, rssi=-60, manufacturer_data={}, service_data={},
-        service_uuids=["000000fa-0000-1000-8000-00805f9b34fb"], source="local",
+        service_uuids=["000000fa-0000-1000-8000-00805f9b34fb"] if panel_service else ["0000110b-0000-1000-8000-00805f9b34fb"],
+        source="local",
         device=BLEDevice(address, name, {}), advertisement=None, connectable=True, time=0, tx_power=None,
     )

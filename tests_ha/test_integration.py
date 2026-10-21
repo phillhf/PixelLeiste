@@ -50,7 +50,7 @@ def device_id(hass: HomeAssistant) -> str:
 
 async def test_user_flow_lists_panels(hass: HomeAssistant) -> None:
     with patch("custom_components.pixelleiste.config_flow.async_discovered_service_info",
-               return_value=[service_info(), service_info("Kopfhörer", "11:22:33:44:55:66")]):
+               return_value=[service_info(), service_info("Kopfhörer", "11:22:33:44:55:66", panel_service=False)]):
         result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": config_entries.SOURCE_USER})
     assert result["type"] is FlowResultType.FORM
     options = result["data_schema"].schema[CONF_ADDRESS].container
