@@ -1,7 +1,7 @@
 {
   "name": "pixelleiste",
   "productName": "PixelLeiste",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Steuerung für iPixel-kompatible LED-Leisten (96x16) per Bluetooth LE – Windows, Linux & Android",
   "author": "Phill (phillhf)",
   "homepage": "https://github.com/phillhf/PixelLeiste",

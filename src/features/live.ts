@@ -1,15 +1,13 @@
-// Clock & live tab: clock faces, stopwatch, countdown, scoreboard, live text with data
-// placeholders (time, weather, battery, CPU/RAM) and Android notifications.
-import { registerPlugin, type PluginListenerHandle } from '@capacitor/core';
+// Clock & live tab: clock faces, stopwatch, countdown, scoreboard and live text with data
+// placeholders (time, weather, battery, CPU/RAM).
 import * as P from '../protocol/ipixel';
 import { hexToRgb, loadPixelFont, renderText } from '../render/glyphs';
 import { encodePng } from '../render/image';
 import { $, checked, errMsg, getSetting, log, num, setSetting, toast, val } from '../ui/dom';
 import { blank, showPreview } from '../ui/preview';
-import { manager, requireConnection, send, size } from '../app';
+import { requireConnection, send, size } from '../app';
 import { getLang, t } from '../i18n';
-import { desktop, isAndroid } from '../platform';
-import { buildTextPlan } from './text';
+import { desktop } from '../platform';
 
 // --- data sources ----------------------------------------------------------------
 
@@ -145,51 +143,6 @@ export function stopLive() {
   $('btnLive').textContent = t('Live-Text starten');
 }
 
-// --- Android notifications --------------------------------------------------------
-
-interface NotificationEvent { app: string; appName: string; title: string; text: string }
-interface NotificationsPlugin {
-  isEnabled(): Promise<{ enabled: boolean }>;
-  openSettings(): Promise<void>;
-  addListener(event: 'notification', cb: (n: NotificationEvent) => void): Promise<PluginListenerHandle>;
-}
-const Notifications = registerPlugin<NotificationsPlugin>('PixelNotifications');
-const seenApps = new Set<string>();
-let returnTimer = 0;
-
-async function onNotification(n: NotificationEvent) {
-  seenApps.add(n.appName || n.app);
-  $('notifSeen').textContent = t('Zuletzt gesehene Apps: {apps}', { apps: [...seenApps].slice(-8).join(', ') });
-  if (!checked('notifOn') || !manager.targets.length) return;
-  const filter = val('notifApps').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
-  const name = (n.appName || n.app).toLowerCase();
-  if (filter.length && !filter.some((f) => name.includes(f) || n.app.toLowerCase().includes(f))) return;
-  const text = [n.appName, n.title, n.text].filter(Boolean).join(': ').replace(/\s+/g, ' ').slice(0, 200);
-  log(`${t('Benachrichtigung')}: ${text}`);
-  await send(t('Benachrichtigung'), (info) => buildTextPlan({
-    kind: 'text', text, font: 'pixel', animation: P.TextAnimation.ScrollLeft, speed: 70, rainbow: 0,
-    color: val('notifColor'), background: null, size: 14, bold: false, smooth: false,
-  }, info, 0), true);
-  clearTimeout(returnTimer);
-  const back = num('notifReturn');
-  if (back > 0) returnTimer = window.setTimeout(() => send(t('Speicherplatz {n} anzeigen', { n: back }), P.showSlot(back), true), num('notifSecs') * 1000);
-}
-
-async function initNotifications() {
-  if (!isAndroid) return;
-  $('notifSection').hidden = false;
-  const ret = $<HTMLSelectElement>('notifReturn');
-  if (ret.options[0]) ret.options[0].text = t('Nicht zurückschalten');
-  await Notifications.addListener('notification', (n) => { onNotification(n).catch(() => undefined); });
-  $('btnNotifAccess').addEventListener('click', () => Notifications.openSettings());
-  $('notifOn').addEventListener('change', async () => {
-    if (checked('notifOn') && !(await Notifications.isEnabled()).enabled) {
-      toast(t('Bitte zuerst den Zugriff auf Benachrichtigungen erlauben'), true);
-      Notifications.openSettings();
-    }
-  });
-}
-
 // --- init -----------------------------------------------------------------------------
 
 export function initLive() {
@@ -234,7 +187,6 @@ export function initLive() {
 
   refreshWeather().then(showWeatherInfo);
   refreshSystem().catch(() => undefined);
-  initNotifications().catch((e) => log(`Benachrichtigungen: ${errMsg(e)}`));
 }
 
 export const rerenderLive = showWeatherInfo;

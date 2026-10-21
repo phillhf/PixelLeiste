@@ -21,7 +21,7 @@ No cloud, no account, no ads.
 | **Draw** | Pixel editor with pen, eraser, fill · “draw live” sends every pixel immediately |
 | **Favourites & profiles** | Save texts, images and drawings with ★; load several favourites as a profile (“Car”, “Party” …) into slots 1–10 in one go |
 | **Music** | Equaliser driven by the phone’s/PC’s microphone · built-in rhythm effect |
-| **Clock & live** | 9 clock faces, stopwatch, countdown, scoreboard · live text with `{zeit}` (time), `{datum}` (date), `{tag}` (weekday), `{countdown}`, `{temp}`, `{wetter}` (weather), `{akku}` (battery) and on Windows `{cpu}`, `{ram}` · **Android:** notifications (e.g. WhatsApp) as scrolling text |
+| **Clock & live** | 9 clock faces, stopwatch, countdown, scoreboard · live text with `{zeit}` (time), `{datum}` (date), `{tag}` (weekday), `{countdown}`, `{temp}`, `{wetter}` (weather), `{akku}` (battery) and on Windows/Linux `{cpu}`, `{ram}` |
 | **Device** | On/off, brightness, orientation, slots, **password protection** |
 | **Connection** | **Several strips at once** · known strips **connect automatically** on start and reconnect after a drop-out |
 | **App** | German / English · **update check** (Windows updates itself) |
@@ -57,7 +57,7 @@ centre. Same features as on Windows.
 
 **Android** (6.0+): open `PixelLeiste-<version>.apk` on the phone and allow “install unknown apps”.
 New versions install right over it. Permissions: “Nearby devices” (Bluetooth), microphone only for
-the equaliser, notification access only if you turn on the notification display.
+the equaliser.
 
 ## Usage
 

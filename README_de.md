@@ -21,7 +21,7 @@ Die Leiste bekommt über USB nur Strom; gesteuert wird sie per **Bluetooth LE** 
 | **Zeichnen** | Pixel-Editor mit Stift, Radierer, Füllen · „Live zeichnen“ überträgt jeden Pixel sofort |
 | **Favoriten & Profile** | Texte, Bilder und Zeichnungen mit ★ speichern; mehrere Favoriten als Profil („Auto“, „Party“ …) auf einmal in die Speicherplätze 1–10 laden |
 | **Musik** | Equalizer über das Mikrofon des Handys/PCs im Takt der Musik · eingebauter Rhythmus-Effekt |
-| **Uhr & Live** | 9 Uhr-Stile, Stoppuhr, Countdown, Anzeigetafel · Live-Text mit `{zeit}`, `{datum}`, `{tag}`, `{countdown}`, `{temp}`, `{wetter}`, `{akku}` und unter Windows `{cpu}`, `{ram}` · **Android:** Benachrichtigungen (z. B. WhatsApp) als Lauftext |
+| **Uhr & Live** | 9 Uhr-Stile, Stoppuhr, Countdown, Anzeigetafel · Live-Text mit `{zeit}`, `{datum}`, `{tag}`, `{countdown}`, `{temp}`, `{wetter}`, `{akku}` und unter Windows/Linux `{cpu}`, `{ram}` |
 | **Gerät** | Ein/Aus, Helligkeit, Ausrichtung, Speicherplätze, **Passwortschutz** |
 | **Verbindung** | **Mehrere Leisten gleichzeitig** · bekannte Leisten werden beim Start **automatisch verbunden** und nach einem Abbruch neu verbunden |
 | **App** | Deutsch / Englisch · **Update-Prüfung** (Windows aktualisiert sich selbst) |
@@ -57,8 +57,7 @@ Software-Center. Funktionsumfang wie unter Windows.
 
 **Android** (ab 6.0): `PixelLeiste-<Version>.apk` auf dem Handy öffnen und „Installation aus
 unbekannten Quellen“ erlauben. Neue Versionen lassen sich direkt darüber installieren.
-Berechtigungen: „Geräte in der Nähe“ (Bluetooth), Mikrofon nur für den Equalizer,
-Benachrichtigungszugriff nur wenn du die Benachrichtigungs-Anzeige einschaltest.
+Berechtigungen: „Geräte in der Nähe“ (Bluetooth), Mikrofon nur für den Equalizer.
 
 ## Bedienung
 
@@ -137,7 +136,7 @@ Eine Codebasis (TypeScript + Vite) für beide Plattformen:
 | `electron/` | Desktop-Hülle (Windows/Linux): Geräteauswahl, Auto-Verbinden, Selbst-Update |
 | `custom_components/pixelleiste/` | Home-Assistant-Integration (Python-Portierung des Protokolls) |
 | `tests_ha/` | Tests der Integration (Protokoll, Einrichtung, Entitäten, Aktionen) |
-| `android/` | Capacitor-Android-Projekt inkl. Benachrichtigungs-Plugin |
+| `android/` | Capacitor-Android-Projekt |
 | `installer/` | Inno-Setup-Skript und Build-Skript |
 | `e2e/` | Playwright-Tests gegen simulierte Leisten (`mock-ble.js`) |
 

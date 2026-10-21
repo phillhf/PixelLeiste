@@ -46,7 +46,6 @@ const EN: Record<string, string> = {
   'Text senden': 'Send text',
   'Nur anzeigen': 'Show only',
   'Speicherplatz {n}': 'Slot {n}',
-  'Nicht zurückschalten': 'Do not switch back',
   'Bitte einen Text eingeben': 'Please enter a text',
   'Text als Animation ({n} Bilder)': 'Text as animation ({n} frames)',
   // image
@@ -133,17 +132,6 @@ const EN: Record<string, string> = {
   'Live-Text starten': 'Start live text',
   'Live-Text stoppen': 'Stop live text',
   'Stil {n}': 'Style {n}',
-  'Benachrichtigungen vom Handy': 'Phone notifications',
-  'Zeigt eingehende Benachrichtigungen (z. B. WhatsApp) als Lauftext an. Funktioniert, solange PixelLeiste geöffnet oder im Hintergrund aktiv ist.':
-    'Shows incoming notifications (e.g. WhatsApp) as scrolling text. Works while PixelLeiste is open or active in the background.',
-  'Benachrichtigungen anzeigen': 'Show notifications',
-  'Zugriff erlauben …': 'Allow access …',
-  'Nur diese Apps (leer = alle)': 'Only these apps (empty = all)',
-  'Danach zurück zu Speicherplatz': 'Then return to slot',
-  'Anzeigedauer (Sek.)': 'Display time (sec.)',
-  'Zuletzt gesehene Apps: {apps}': 'Recently seen apps: {apps}',
-  'Bitte zuerst den Zugriff auf Benachrichtigungen erlauben': 'Please allow access to notifications first',
-  'Benachrichtigung': 'Notification',
   'So': 'Sun', 'Mo': 'Mon', 'Di': 'Tue', 'Mi': 'Wed', 'Do': 'Thu', 'Fr': 'Fri', 'Sa': 'Sat',
   // device
   'Einschalten': 'Turn on', 'Ausschalten': 'Turn off',
